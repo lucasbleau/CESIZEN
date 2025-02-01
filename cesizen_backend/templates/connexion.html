@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    {% extends "base.html" %}
+
+    {% block title %}Connexion{% endblock %}
+
+    {% block content %}
+
+        <h2>Connexion / Inscription</h2>
+
+        <!-- Messages d'erreur / succès -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Formulaire de Connexion -->
+        <form method="POST">
+            {% csrf_token %}
+            <h3>Se connecter</h3>
+            <label>Email :</label>
+            <input type="email" name="email" required>
+            <label>Mot de passe :</label>
+            <input type="password" name="password" required>
+            <button type="submit" name="login">Connexion</button>
+        </form>
+
+    {% endblock %}
+
+
+</body>
+</html>
