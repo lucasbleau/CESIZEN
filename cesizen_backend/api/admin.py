@@ -5,13 +5,28 @@ from .models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Inform
 class ExerciceRespirationAdmin(admin.ModelAdmin):
     list_display = ('nom', 'duree_inspiration', 'duree_apnee', 'duree_expiration')
     search_fields = ('nom',)
-    list_filter = ('duree_inspiration', 'duree_expiration')
+    list_filter = ('duree_inspiration', 'duree_apnee', 'duree_expiration')
 
 # Personnalisation pour le modèle Utilisateur
 class UtilisateurAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'role', 'date_inscription')
+    list_display = ('username', 'email', 'role', 'date_inscription', 'statut')
     search_fields = ('username', 'email')
     list_filter = ('role', 'date_inscription')
+
+    def deactivate_user(self, request, queryset):
+        updated_count = queryset.update(statut='désactivé')
+        self.message_user(request, f'{updated_count} utilisateur(s) désactivé(s).')
+
+    deactivate_user.short_description = "Désactiver l'utilisateur"
+
+    # Action pour réactiver l'utilisateur
+    def reactivate_user(self, request, queryset):
+        updated_count = queryset.update(statut='actif')
+        self.message_user(request, f'{updated_count} utilisateur(s) réactivé(s).')
+
+    reactivate_user.short_description = "Réactiver l'utilisateur"
+
+    actions = [deactivate_user, reactivate_user]
 
 # Personnalisation pour le modèle HistoriqueExercice
 class HistoriqueExerciceAdmin(admin.ModelAdmin):

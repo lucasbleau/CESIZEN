@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Inscription</title>
 </head>
 <body>
 
     {% extends "base.html" %}
 
-    {% block title %}Connexion{% endblock %}
+    {% block title %}Inscription{% endblock %}
 
     {% block content %}
 
-        <h2>Connexion</h2>
+        <h2>Inscription</h2>
 
         {% if messages %}
             {% for message in messages %}
@@ -24,13 +24,7 @@
         {% endif %}
 
         <form method="POST">
-            {% csrf_token %}
-            <h3>Se connecter</h3>
-            <label>Email :</label>
-            <input type="email" name="email" required>
-            <label>Mot de passe :</label>
-            <input type="password" name="password" required>
-            <button type="submit" name="login">Connexion</button>
+
         </form>
 
     {% endblock %}
