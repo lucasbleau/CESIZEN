@@ -1,7 +1,6 @@
 from django.db import models
-
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.admin.models import LogEntry
 
 # Modèle Utilisateur personnalisé
 class Utilisateur(AbstractUser):
@@ -13,7 +12,7 @@ class Utilisateur(AbstractUser):
     email = models.EmailField(unique=True)  # Assure-toi que l'email est unique
     username = models.CharField(max_length=150, unique=True)
     USERNAME_FIELD = 'email'  # Authentification via email
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username']  # Le champ 'username' est nécessaire lors de la création via createsuperuser
     
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='utilisateur')
     date_inscription = models.DateTimeField(auto_now_add=True)
@@ -39,14 +38,19 @@ class Utilisateur(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        # Si l'utilisateur est nouveau ou si le mot de passe n'est pas déjà haché
-        if self.pk is None or not self.password.startswith('pbkdf2_'):
-            # 'pbkdf2_' est le préfixe par défaut de Django pour les mots de passe hachés (peut varier selon l'algorithme)
-            self.set_password(self.password)
+        if self.pk is None and not self.password.startswith('pbkdf2_'):
+            self.set_password(self.password)  # Hash le mot de passe seulement à la création
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        HistoriqueExercice.objects.filter(utilisateur=self).delete()
+        Information.objects.filter(createur=self).delete()
+        LogEntry.objects.filter(user=self).delete()  # C'est crucial pour les logs d'admin !
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+    
 
 # Modèle Exercice de Respiration
 class ExerciceRespiration(models.Model):

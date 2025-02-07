@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+import sqlite3
+from django.db.backends.signals import connection_created
+from django.dispatch import receiver
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -57,8 +60,11 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'api.backends.EmailAuthBackend',  # Utilisation de l'email pour l'authentification
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+LOGIN_URL = '/connexion/'
 
 ROOT_URLCONF = 'cesizen_backend.urls'
 
@@ -84,12 +90,21 @@ WSGI_APPLICATION = 'cesizen_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+def enforce_foreign_keys(connection):
+    if isinstance(connection, sqlite3.Connection):  # Vérifie si c'est bien SQLite
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+        cursor.close()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',  # Pour Django 3.1+ utilisant pathlib
     }
 }
+
+def activate_foreign_keys(sender, connection, **kwargs):
+    enforce_foreign_keys(connection)
 
 
 # Password validation
