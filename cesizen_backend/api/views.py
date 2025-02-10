@@ -6,21 +6,11 @@ from django.contrib import messages
 from api.models import Utilisateur
 
 def accueil(request):
-    user_id = request.session.get('_auth_user_id')  # Récupère l'ID utilisateur en session
-    print(f"Session User ID : {user_id}")  # Debugging
-
-    if request.user.is_authenticated:
-        print(f"Utilisateur authentifié : {request.user}")
-    else:
-        print("Aucun utilisateur connecté !")
-
     return render(request, 'accueil.html') 
 
 
 def liste_utilisateurs(request):
-    # Récupérez tous les utilisateurs
     utilisateurs = Utilisateur.objects.all()
-    # Passez les utilisateurs au template
     return render(request, 'liste_utilisateurs.html', {'utilisateurs': utilisateurs})
 
 
@@ -29,7 +19,7 @@ def connexion(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        user = authenticate(request, username=email, password=password)  # Vérifie les credentials
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
             login(request, user)
@@ -49,7 +39,6 @@ def inscription(request):
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
 
-        # Vérifications
         if password1 != password2:
             messages.error(request, "Les mots de passe ne correspondent pas.")
             return render(request, "inscription.html")
@@ -62,23 +51,20 @@ def inscription(request):
             messages.error(request, "Ce nom d'utilisateur est déjà pris.")
             return render(request, "inscription.html")
 
-        # Création de l'utilisateur
         utilisateur = Utilisateur.objects.create_user(
             email=email,
             username=username,
             password=password1
         )
 
-        # 🔹 Récupérer l'utilisateur via `authenticate` pour identifier le bon backend
         user = authenticate(request, email=email, password=password1)
 
         if user:
-            login(request, user)  # 🔹 Connexion automatique
+            login(request, user)
             messages.success(request, "Inscription réussie !")
-            return redirect("accueil")  # Redirige vers la page d'accueil ou de profil
+            return redirect("accueil")
 
     return render(request, "inscription.html")
-
 
 
 @login_required

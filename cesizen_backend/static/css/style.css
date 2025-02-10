@@ -5,10 +5,55 @@
     box-sizing: border-box;
 }
 
+.bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+}
+
 .full-vh {
     min-height: 100vh;
 }
-  
+
+.btn {
+    background-color: #4299e1;
+    color: #ffffff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #3182ce; 
+}
+
+a {
+    color: #4299e1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #3182ce; 
+}
+
+.alert-success {
+    background-color: #48bb78;
+    color: #ffffff;
+}
+
+.alert-error {
+    background-color: #f56565;
+    color: #ffffff;
+}
+
+.alert-warning {
+    background-color: #ed8936;
+    color: #ffffff;
+}
+
+.alert-info {
+    background-color: #4299e1;
+    color: #ffffff;
+}
+
 .offcanva-custom {
     width: 40vh !important;
 }
@@ -27,4 +72,4 @@
 
 .shadow-top {
     box-shadow: 0 -10px 10px #abb2b9;
-}   
+}
