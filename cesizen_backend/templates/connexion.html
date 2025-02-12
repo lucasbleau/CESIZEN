@@ -6,11 +6,11 @@
 
 {% block content %}
 
-    <div class="d-flex flex-column align-items-center justify-content-center w-100">    
+    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
 
-        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow-bottom blue-bg-color rounded-3 p-4">
+        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
 
-            <h4 class="text-center mb-4 bg-light p-3 rounded-3">Se connecter</h4>
+            <h2 class="text-center mb-4 blue-text-color">Se connecter</h2>
 
             <form method="POST" class="d-flex flex-column align-items-center justify-content-center w-100">
 
@@ -27,7 +27,11 @@
                     </div>
                 </div>
 
-                <button type="submit" name="login" class="btn btn-light">Connexion</button>
+                <div class="d-flex flex-column">
+                    <button type="submit" name="login" class="btn blue-bg-color text-light mb-3">Connexion</button>
+                    <a class="text-decoration-none link-opacity-50-hover" href="">Mot de passe oublié ?</a>
+                </div>
+
 
             </form>
 
@@ -43,14 +47,6 @@
             </script>
 
         </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
 
     </div>
 

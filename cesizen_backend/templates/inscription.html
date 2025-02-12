@@ -4,34 +4,23 @@
 
 {% block content %}
 
-    <div class="d-flex flex-column align-items-center justify-content-center w-100 bg">
+    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header margin-bottom">
 
-        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow-bottom blue-bg-color rounded-3 p-4">
+        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
 
             <h2 class="text-center mb-4 blue-text-color">Inscription</h2>
-
-            {% if messages %}
-                <div class="alert alert-info w-100 text-center">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
 
             <form method="POST" class="d-flex flex-column align-items-center justify-content-center w-100">
                 
                 {% csrf_token %}
 
-                <!-- Champ Email -->
-                <label for="email" class="mb-2">Email</label>
+                <label for="email" class="mb-2">Email*</label>
                 <input type="email" name="email" id="email" class="mb-3 rounded-2 p-1 w-50" required>
 
-                <!-- Champ Nom d'utilisateur -->
-                <label for="username" class="mb-2">Nom d'utilisateur</label>
+                <label for="username" class="mb-2">Nom d'utilisateur*</label>
                 <input type="text" name="username" id="username" class="mb-3 rounded-2 p-1 w-50" required>
 
-                <!-- Champ Mot de passe -->
-                <label for="password1" class="mb-2">Mot de passe</label>
+                <label for="password1" class="mb-2">Mot de passe*</label>
                 <div class="position-relative w-50">
                     <input type="password" name="password1" id="password1" class="mb-3 rounded-2 p-1 w-100" required>
                     <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword('password1')" style="cursor: pointer;">
@@ -39,8 +28,7 @@
                     </div>
                 </div>
 
-                <!-- Champ Confirmation du mot de passe -->
-                <label for="password2" class="mb-2">Confirmez le mot de passe</label>
+                <label for="password2" class="mb-2">Confirmez le mot de passe*</label>
                 <div class="position-relative w-50">
                     <input type="password" name="password2" id="password2" class="mb-3 rounded-2 p-1 w-100" required>
                     <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword('password2')" style="cursor: pointer;">
@@ -48,22 +36,91 @@
                     </div>
                 </div>
 
-                <!-- Bouton d'inscription -->
-                <button type="submit" class="btn btn-light mt-3">S'inscrire</button>
-
+                <div class="rounded-2 p-2 my-2 w-50 d-flex flex-column align-items-center text-center">
+                    <p>Citères à respecter pour le mot de passe :</p>
+                    <div>
+                        <ul class="list-unstyled">
+                            <li id="criteria-length" class="invalid">Avoir 12 caractères</li>
+                            <li id="criteria-lowercase" class="invalid">Une minuscule</li>
+                            <li id="criteria-uppercase" class="invalid">Une majuscule</li>
+                            <li id="criteria-special" class="invalid">Un caractère spécial</li>
+                            <li id="criteria-match" class="invalid">Les mots de passe doivent correspondre</li>
+                        </ul>
+                    </div>
+                </div>
+            
+                <button id="submit-btn" type="submit" class="btn blue-bg-color text-light my-3" disabled>S'inscrire</button>
+                
             </form>
 
-            <!-- Lien vers la page de connexion -->
-            <p class="mt-3 text-center">
-                Déjà inscrit ? <a href="{% url 'connexion' %}" class="blue-text-color">Se connecter</a>
-            </p>
+            <div class="d-flex flex-row">
+                <p class="me-2">Déjà inscrit ?</p>
+                <a href="{% url 'connexion' %}" class="text-decoration-none link-opacity-50-hover">Se connecter</a>
+            </div>
 
         </div>
 
     </div>
 
     <script>
-        // Fonction pour afficher/masquer le mot de passe
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("password1");
+            const confirmPasswordInput = document.getElementById("password2");
+            const emailInput = document.getElementById("email");
+            const usernameInput = document.getElementById("username");
+            const submitButton = document.getElementById("submit-btn");
+            const criteria = {
+                length: document.getElementById("criteria-length"),
+                lowercase: document.getElementById("criteria-lowercase"),
+                uppercase: document.getElementById("criteria-uppercase"),
+                special: document.getElementById("criteria-special"),
+                match: document.getElementById("criteria-match")
+            };
+    
+            function validatePassword() {
+                const password = passwordInput.value.trim();
+                const confirmPassword = confirmPasswordInput.value.trim();
+                const email = emailInput.value.trim();
+                const username = usernameInput.value.trim();
+    
+                // Vérifications des critères
+                const isLongEnough = password.length >= 12;
+                const hasLowercase = /[a-z]/.test(password);
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+                const passwordsMatch = confirmPassword === password && password.length > 0;
+                const allFieldsFilled = email !== "" && username !== "" && password !== "" && confirmPassword !== "";
+    
+                // Mise à jour des classes pour changer la couleur
+                criteria.length.classList.toggle("valid", isLongEnough);
+                criteria.length.classList.toggle("invalid", !isLongEnough);
+    
+                criteria.lowercase.classList.toggle("valid", hasLowercase);
+                criteria.lowercase.classList.toggle("invalid", !hasLowercase);
+    
+                criteria.uppercase.classList.toggle("valid", hasUppercase);
+                criteria.uppercase.classList.toggle("invalid", !hasUppercase);
+    
+                criteria.special.classList.toggle("valid", hasSpecialChar);
+                criteria.special.classList.toggle("invalid", !hasSpecialChar);
+    
+                criteria.match.classList.toggle("valid", passwordsMatch);
+                criteria.match.classList.toggle("invalid", !passwordsMatch);
+    
+                const allValid = isLongEnough && hasLowercase && hasUppercase && hasSpecialChar && passwordsMatch && allFieldsFilled;
+    
+                submitButton.disabled = !allValid;
+            }
+    
+            [passwordInput, confirmPasswordInput, emailInput, usernameInput].forEach(input => {
+                input.addEventListener("input", validatePassword);
+            });
+    
+            validatePassword();
+        });
+    
+
         function togglePassword(inputId) {
             var passwordInput = document.getElementById(inputId);
             if (passwordInput.type === "password") {
@@ -72,6 +129,7 @@
                 passwordInput.type = "password";
             }
         }
+
     </script>
 
 {% endblock %}
