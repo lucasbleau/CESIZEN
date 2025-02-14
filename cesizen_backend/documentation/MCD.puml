@@ -1,0 +1,29 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Utilisateur {
+  - idUtilisateur
+  - nomUtilisateur
+  - motDePasse
+  - email
+  - role
+}
+
+class Information {
+  - idInformation
+  - titre
+  - contenu
+  - datePublication
+}
+
+class ExerciceRespiration {
+  - idExercice
+  - nom
+  - dureeInspiration
+  - dureeApnee
+  - dureeExpiration
+}
+
+Utilisateur "1" -- "*" Information: "consulte / Gère"
+Utilisateur "1" -- "*" ExerciceRespiration: "realise"
+@enduml
