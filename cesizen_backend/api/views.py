@@ -3,16 +3,23 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from api.models import Utilisateur
+from api.models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Information
 
 def accueil(request):
     return render(request, 'accueil.html') 
 
+@login_required
+def profil(request):
+    user_info = {
+        'Nom d\'utilisateur': request.user.username,
+        'Email': request.user.email,
+        'Nom complet': request.user.get_full_name(),
+    }
+    return render(request, 'profil.html', {'user_info': user_info})
 
-def liste_utilisateurs(request):
-    utilisateurs = Utilisateur.objects.all()
-    return render(request, 'liste_utilisateurs.html', {'utilisateurs': utilisateurs})
 
+def preferences(request):
+    return render(request, 'preferences.html')
 
 def connexion(request):
     if request.method == "POST":
@@ -72,3 +79,7 @@ def deconnexion(request):
     logout(request)
     messages.success(request, "Déconnexion réussie !")
     return redirect("accueil")
+
+def liste_exercices(request):
+    exercices = ExerciceRespiration.objects.all()
+    return render(request, 'exercices.html', {'exercices': exercices})

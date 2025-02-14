@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
+
+    <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
+
+        <h2 class="text-center mb-4 blue-text-color">Votre Profil</h2>
+
+        <div class="d-flex flex-column justify-content-between">
+
+            {% for field, value in user_info.items %}
+
+                <div class="d-flex my-2">
+
+                    <span class="me-2"><b>{{ field }} : </b></span>
+
+                    {% if value %}
+
+                        <span class="text-center me-4">{{ value }}</span>
+                        <a href="">Modifier</a>
+
+                    {% else %}
+
+                        <span class="me-4"><i>Non spécifié</i></span>
+                        <a href="">Ajouter</a>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+         
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
