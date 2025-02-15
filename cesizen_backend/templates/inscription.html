@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}CESIZEN - Inscription{% endblock %}
 
 {% block content %}
 
@@ -15,10 +15,10 @@
                 {% csrf_token %}
 
                 <label for="email" class="mb-2">Email*</label>
-                <input type="email" name="email" id="email" class="mb-3 rounded-2 p-1 w-50" required>
+                <input type="email" name="email" id="email" class="mb-3 rounded-2 p-1 w-50" required value="{{ request.POST.email|default:'' }}">
 
                 <label for="username" class="mb-2">Nom d'utilisateur*</label>
-                <input type="text" name="username" id="username" class="mb-3 rounded-2 p-1 w-50" required>
+                <input type="text" name="username" id="username" class="mb-3 rounded-2 p-1 w-50" required value="{{ request.POST.username|default:'' }}">
 
                 <label for="password1" class="mb-2">Mot de passe*</label>
                 <div class="position-relative w-50">
@@ -36,20 +36,27 @@
                     </div>
                 </div>
 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="text-center w-50 mb-3 alert alert-danger" id="message">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <div class="rounded-2 p-2 my-2 w-50 d-flex flex-column align-items-center text-center">
-                    <p>Citères à respecter pour le mot de passe :</p>
+                    <p>Critères à respecter pour le mot de passe :</p>
                     <div>
                         <ul class="list-unstyled">
                             <li id="criteria-length" class="invalid">Avoir 12 caractères</li>
                             <li id="criteria-lowercase" class="invalid">Une minuscule</li>
                             <li id="criteria-uppercase" class="invalid">Une majuscule</li>
                             <li id="criteria-special" class="invalid">Un caractère spécial</li>
-                            <li id="criteria-match" class="invalid">Les mots de passe doivent correspondre</li>
                         </ul>
                     </div>
                 </div>
             
-                <button id="submit-btn" type="submit" class="btn blue-bg-color text-light my-3" disabled>S'inscrire</button>
+                <button id="submit-btn" type="submit" class="btn blue-bg-color btn-hover-b text-light my-3" disabled>S'inscrire</button>
                 
             </form>
 
@@ -74,25 +81,20 @@
                 length: document.getElementById("criteria-length"),
                 lowercase: document.getElementById("criteria-lowercase"),
                 uppercase: document.getElementById("criteria-uppercase"),
-                special: document.getElementById("criteria-special"),
-                match: document.getElementById("criteria-match")
+                special: document.getElementById("criteria-special")
             };
     
             function validatePassword() {
                 const password = passwordInput.value.trim();
-                const confirmPassword = confirmPasswordInput.value.trim();
                 const email = emailInput.value.trim();
                 const username = usernameInput.value.trim();
     
-                // Vérifications des critères
                 const isLongEnough = password.length >= 12;
                 const hasLowercase = /[a-z]/.test(password);
                 const hasUppercase = /[A-Z]/.test(password);
                 const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-                const passwordsMatch = confirmPassword === password && password.length > 0;
-                const allFieldsFilled = email !== "" && username !== "" && password !== "" && confirmPassword !== "";
+                const allFieldsFilled = email !== "" && username !== "" && password !== "";
     
-                // Mise à jour des classes pour changer la couleur
                 criteria.length.classList.toggle("valid", isLongEnough);
                 criteria.length.classList.toggle("invalid", !isLongEnough);
     
@@ -105,10 +107,7 @@
                 criteria.special.classList.toggle("valid", hasSpecialChar);
                 criteria.special.classList.toggle("invalid", !hasSpecialChar);
     
-                criteria.match.classList.toggle("valid", passwordsMatch);
-                criteria.match.classList.toggle("invalid", !passwordsMatch);
-    
-                const allValid = isLongEnough && hasLowercase && hasUppercase && hasSpecialChar && passwordsMatch && allFieldsFilled;
+                const allValid = isLongEnough && hasLowercase && hasUppercase && hasSpecialChar && allFieldsFilled;
     
                 submitButton.disabled = !allValid;
             }
@@ -119,6 +118,7 @@
     
             validatePassword();
         });
+        
     
 
         function togglePassword(inputId) {

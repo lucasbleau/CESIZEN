@@ -44,6 +44,14 @@ header {
     background-color: #547a93 !important;
 }
 
+.btn-hover-b:hover {
+    background-color: #547a93 !important;
+}
+
+.btn-hover-r:hover {
+    background-color: #933939 !important;
+}
+
 .shadow-bottom {
     box-shadow: 0px 5px 50px 0px rgba(0,0,0,0.2);
 }
@@ -56,12 +64,12 @@ header {
     box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.2);
 }
 
-.btn:hover {
-    background-color: #549ac9 !important;
-}
-
 .margin-top-header {
     margin-top: 23vh;
+}
+
+.margin-top-header-2 {
+    margin-top: 16vh;
 }
 
 .margin-bottom {

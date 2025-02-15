@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}CESIZEN - Connexion{% endblock %}
 
 {% block content %}
 
@@ -27,8 +27,16 @@
                     </div>
                 </div>
                 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="text-center mb-3 text-danger" id="message">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <div class="d-flex flex-column">
-                    <button type="submit" name="login" class="btn blue-bg-color text-light mb-3">Connexion</button>
+                    <button type="submit" name="login" class="btn blue-bg-color btn-hover-b text-light mb-3">Connexion</button>
                     <a class="text-decoration-none link-opacity-50-hover" href="">Mot de passe oublié ?</a>
                 </div>
 

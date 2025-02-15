@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -8,18 +8,52 @@ from api.models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Inf
 def accueil(request):
     return render(request, 'accueil.html') 
 
+
 @login_required
 def profil(request):
     user_info = {
         'Nom d\'utilisateur': request.user.username,
         'Email': request.user.email,
-        'Nom complet': request.user.get_full_name(),
+        'Prénom': request.user.first_name,
+        'Nom': request.user.last_name,
     }
+
     return render(request, 'profil.html', {'user_info': user_info})
+
+
+@login_required
+def profil_edit(request):
+    user = request.user
+
+    if request.method == "POST":
+        user.username = request.POST.get("Nom d'utilisateur", user.username)
+        user.email = request.POST.get("Email", user.email)
+        user.first_name = request.POST.get("Prénom", user.first_name)
+        user.last_name = request.POST.get("Nom", user.last_name)
+
+        user.save()
+        return redirect('profil')
+
+    user_info = {
+        "Nom d'utilisateur": user.username,
+        "Email": user.email,
+        "Prénom": user.first_name,
+        "Nom": user.last_name,
+    }
+
+    return render(request, 'profil_edit.html', {'user_info': user_info})
+
 
 
 def preferences(request):
     return render(request, 'preferences.html')
+
+@login_required
+def upgrade_to_admin(request, user_id):
+    user = get_object_or_404(Utilisateur, id=user_id)
+    user.role = "administrateur"
+    user.save()
+    return redirect('profil')
 
 def connexion(request):
     if request.method == "POST":

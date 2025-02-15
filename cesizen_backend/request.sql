@@ -1,1 +1,0 @@
-SELECT username, email, password FROM api_utilisateur;
