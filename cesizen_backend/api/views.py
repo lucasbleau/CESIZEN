@@ -6,7 +6,8 @@ from django.contrib import messages
 from api.models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Information
 
 def accueil(request):
-    return render(request, 'accueil.html') 
+    informations = Information.objects.all()
+    return render(request, 'accueil.html', {'informations': informations})
 
 
 @login_required
@@ -54,6 +55,7 @@ def upgrade_to_admin(request, user_id):
     user.role = "administrateur"
     user.save()
     return redirect('profil')
+
 
 def connexion(request):
     if request.method == "POST":

@@ -36,7 +36,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,7 +59,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'api.backends.EmailAuthBackend',  # Utilisation de l'email pour l'authentification
+    'api.backends.EmailAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -91,15 +90,19 @@ WSGI_APPLICATION = 'cesizen_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 def enforce_foreign_keys(connection):
-    if isinstance(connection, sqlite3.Connection):  # Vérifie si c'est bien SQLite
+    if isinstance(connection, sqlite3.Connection):
         cursor = connection.cursor()
         cursor.execute("PRAGMA foreign_keys = ON;")
         cursor.close()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Pour Django 3.1+ utilisant pathlib
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cesizen_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
