@@ -20,7 +20,7 @@
             <div class="d-flex align-items-center">
                 
                 <a href="{% url 'accueil' %}" class="btn blue-bg-color btn-hover-b rounded-1 text-light me-4">Accueil</a>
-                <a href="{% url 'liste_exercices' %}" class="btn blue-bg-color btn-hover-b rounded-1 text-light">Exercices</a>
+                <a href="#exercices-content">Exercices</a>
 
             </div>
 
@@ -55,7 +55,6 @@
 
                                     <a href="{% url 'profil' %}" class="my-2 btn blue-bg-color btn-hover-b text-light">Profil</a>
                                     <a href="{% url 'preferences' %}" class="my-2 btn blue-bg-color btn-hover-b text-light">Préférences</a>
-                                    <!-- <a href="{% url 'upgrade_admin' user.id %}" class="btn btn-warning">Upgrade</a> -->
 
                                     {% if user.is_superuser %}
 

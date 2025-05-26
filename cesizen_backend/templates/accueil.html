@@ -1,82 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}CESIZEN - Accueil{% endblock %}
 
 {% block content %}
+<div class="d-flex justify-content-center align-items-center flex-column margin-bottom">
 
-    <div class="d-flex justify-content-center align-items-center flex-column margin-bottom">
-
-        {% if messages %}
-
-        <div class="d-flex justify-content-center w-100 margin-top-header-2">
-
-            {% for message in messages %}
-                <div class="text-center w-25 alert alert-light" id="message">
-                    {{ message }}
-                </div>
-            {% endfor %}
-
+    {% if messages %}
+    <div class="d-flex justify-content-center w-100 margin-top-header-2">
+        {% for message in messages %}
+        <div class="text-center w-25 alert alert-light" id="message">
+            {{ message }}
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        {% endif %}
-
-        <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
-
-            <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
-
-                <span>
-                    Bienvenue sur CESIZEN, votre plateforme de gestion de ressources humaines!
-                    Vous pourrez gérer votre équipe, les ressources disponibles, et la progression de votre projet.
-                    L'application vous permettra également de suivre l'évolution de votre équipe et de vous orienter vers les ressources les plus utiles.
-                    N'hésitez pas à contacter votre équipe pour obtenir de l'aide nécessaire!
-                    <br>
-                    <br>
-                    CESIZEN est un outil gratuit et open-source, développé par le CESI Zénith.
-                    Nous encourageons tous les équipes à utiliser CESIZEN pour faciliter la gestion de leurs ressources humaines.
-                    <br>
-                    <br>
-                    Merci de votre confiance!
-                </span>
-
-            </div>
-
+    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
+        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
+            <span>
+                Bienvenue sur CESIZEN, votre plateforme de gestion de ressources humaines !
+                Vous pourrez gérer votre équipe, les ressources disponibles, et la progression de votre projet.
+                L'application vous permettra également de suivre l'évolution de votre équipe et de vous orienter vers les ressources les plus utiles.
+                N'hésitez pas à contacter votre équipe pour obtenir de l'aide nécessaire !
+                <br><br>
+                CESIZEN est un outil gratuit et open-source, développé par le CESI Zénith.
+                Nous encourageons tous les équipes à utiliser CESIZEN pour faciliter la gestion de leurs ressources humaines.
+                <br><br>
+                Merci de votre confiance !
+            </span>
         </div>
-
-        {% if informations %}
-
-            <div class="container mt-5">
-                <div class="row justify-content-center">
-
-                    {% for information in informations %}
-
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 shadow">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ information.titre }}</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">{{ information.sous_titre }}</h6>
-                                    <p class="card-text">{{ information.contenu }}</p>
-                                    <a href="#" class="card-link">Voir plus</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    {% endfor %}
-
-                </div>
-            </div>
-
-        {% endif %}
-
     </div>
 
-    <script>
-        setTimeout(function () {
-            var alertElement = document.querySelector('.alert');
-            if (alertElement) {
-                alertElement.classList.remove('show');
-                alertElement.classList.add('fade');
-            }
-        }, 4000);
-    </script>
+    <div class="container mt-5">
+        <div class="row justify-content-center" id="informations-content">
+        </div>
+    </div>
 
+</div>
+
+<script src="{% static 'js/accueil.js' %}"></script>
+
+<script>
+    setTimeout(function () {
+        var alertElement = document.querySelector('.alert');
+        if (alertElement) {
+            alertElement.classList.remove('show');
+            alertElement.classList.add('fade');
+        }
+    }, 4000);
+</script>
 {% endblock %}

@@ -35,7 +35,28 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CESIZEN API',
+    'DESCRIPTION': 'Documentation Swagger de l’API CESIZEN',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': '/api',
+    'PREPROCESSING_HOOKS': [],
+    'POSTPROCESSING_HOOKS': [],
+    'COMPONENT_SPLIT_REQUEST': True,
+    'ENABLE_WARNINGS': True,
+    'SORT_OPERATIONS': True,
+    'SORT_OPERATION_PARAMETERS': True,
+    'SWAGGER_UI_DIST': 'https://cdn.jsdelivr.net/npm/swagger-ui-dist/',
+
+    'DISABLE_ERRORS_AND_WARNINGS': True,
+    'APPEND_COMPONENTS': {},
+    'ENUM_NAME_OVERRIDES': {},
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
