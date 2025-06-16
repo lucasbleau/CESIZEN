@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}CESIZEN - Inscription{% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
 
             <h2 class="text-center mb-4 blue-text-color">Inscription</h2>
 
-            <form method="POST" class="d-flex flex-column align-items-center justify-content-center w-100">
+            <form class="d-flex flex-column align-items-center justify-content-center w-100">
                 
                 {% csrf_token %}
 
@@ -131,5 +131,7 @@
         }
 
     </script>
+
+    <script src="{% static 'js/inscription.js' %}"></script>
 
 {% endblock %}

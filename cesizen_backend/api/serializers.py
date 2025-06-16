@@ -8,11 +8,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'first_name', 'last_name']
 
 class ProfilSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    email = serializers.EmailField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-
+    username = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
+    
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur

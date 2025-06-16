@@ -4,36 +4,43 @@
 {% block title %}CESIZEN - Accueil{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center flex-column margin-bottom">
+<div class="container margin-top-header margin-bottom">
 
     {% if messages %}
-    <div class="d-flex justify-content-center w-100 margin-top-header-2">
+    <div class="row justify-content-center mt-4">
         {% for message in messages %}
-        <div class="text-center w-25 alert alert-light" id="message">
+        <div class="col-md-6 alert alert-light text-center" id="message">
             {{ message }}
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
-        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
-            <span>
-                Bienvenue sur CESIZEN, votre plateforme de gestion de ressources humaines !
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-md-10 shadow bg-light rounded-3 p-4">
+            <p>
+                Bienvenue sur <strong>CESIZEN</strong>, votre plateforme de gestion de ressources humaines !
                 Vous pourrez gérer votre équipe, les ressources disponibles, et la progression de votre projet.
-                L'application vous permettra également de suivre l'évolution de votre équipe et de vous orienter vers les ressources les plus utiles.
-                N'hésitez pas à contacter votre équipe pour obtenir de l'aide nécessaire !
                 <br><br>
-                CESIZEN est un outil gratuit et open-source, développé par le CESI Zénith.
-                Nous encourageons tous les équipes à utiliser CESIZEN pour faciliter la gestion de leurs ressources humaines.
+                L'application vous permet de suivre l'évolution de votre équipe et d’accéder aux ressources utiles.
                 <br><br>
+                <strong>CESIZEN</strong> est un outil gratuit, open-source, développé par <em>CESI Zénith</em>.
                 Merci de votre confiance !
-            </span>
+            </p>
         </div>
     </div>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center" id="informations-content">
+    <h2 class="text-center mb-4">Informations importantes</h2>
+    <div class="row" id="informations-content">
+        <!-- Contenu injecté dynamiquement -->
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4 text-center mt-4" id="info-loading" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p>Chargement des informations...</p>
         </div>
     </div>
 
@@ -42,11 +49,10 @@
 <script src="{% static 'js/accueil.js' %}"></script>
 
 <script>
-    setTimeout(function () {
-        var alertElement = document.querySelector('.alert');
-        if (alertElement) {
-            alertElement.classList.remove('show');
-            alertElement.classList.add('fade');
+    setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.classList.add('fade');
         }
     }, 4000);
 </script>

@@ -23,19 +23,8 @@
                                 <th class="text-center">Valeur</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for field, value in user_info.items %}
-                            <tr>
-                                <td class="fw-bold text-center align-middle">{{ field }}</td>
-                                <td class="text-center">
-                                    {% if value %}
-                                        {{ value }}
-                                    {% else %}
-                                        <i>Non spécifié</i>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
+                        <tbody id="profil-table">
+                            <tr><td colspan="2" class="text-center">Chargement...</td></tr>
                         </tbody>
                     </table>
 
@@ -49,5 +38,7 @@
     </div>
 
 </div>
+
+<script type="module" src="{% static 'js/profil.js' %}"></script>
 
 {% endblock %}

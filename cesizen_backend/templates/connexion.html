@@ -1,61 +1,45 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block title %}CESIZEN - Connexion{% endblock %}
 
 {% block content %}
+<div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">
 
-    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header">    
+    <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
 
-        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
+        <h2 class="text-center mb-4 blue-text-color">Se connecter</h2>
 
-            <h2 class="text-center mb-4 blue-text-color">Se connecter</h2>
+        <form id="connexion-form" class="d-flex flex-column align-items-center justify-content-center w-100">
+            {% csrf_token %}
 
-            <form method="POST" class="d-flex flex-column align-items-center justify-content-center w-100">
+            <label for="email" class="mb-2 w-50 text-start">Email :</label>
+            <input id="email" class="mb-3 rounded-2 p-1 w-50" type="email" name="email" required>
 
-                {% csrf_token %}
+            <label for="password" class="mb-2 w-50 text-start">Mot de passe :</label>
+            <div class="position-relative w-50">
+                <input id="password" class="mb-3 rounded-2 p-1 w-100" type="password" name="password" required>
+                <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword()">👁</div>
+            </div>
 
-                <label class="mb-2">Email :</label>
-                <input class="mb-3 rounded-2 p-1 w-50" type="email" name="email" required>
+            <div id="message"></div>
 
-                <label class="mb-2">Mot de passe :</label>
-                <div class="position-relative w-50">
-                    <input id="password" class="mb-3 rounded-2 p-1 w-100" type="password" name="password" required>
-                    <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword()">
-                        👁
-                    </div>
-                </div>
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="text-center mb-3 text-danger" id="message">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <div class="d-flex flex-column">
-                    <button type="submit" name="login" class="btn blue-bg-color btn-hover-b text-light mb-3">Connexion</button>
-                    <a class="text-decoration-none link-opacity-50-hover" href="">Mot de passe oublié ?</a>
-                </div>
-
-
-            </form>
-
-            <script>
-                function togglePassword() {
-                    var passwordInput = document.getElementById("password");
-                    if (passwordInput.type === "password") {
-                        passwordInput.type = "text";
-                    } else {
-                        passwordInput.type = "password";
-                    }
-                }
-            </script>
-
-        </div>
+            <div class="d-flex flex-column w-100 align-items-center">
+                <button type="submit" class="btn blue-bg-color btn-hover-b text-light mb-3">Connexion</button>
+                <a class="text-decoration-none link-opacity-50-hover" href="#">Mot de passe oublié ?</a>
+            </div>
+        </form>
 
     </div>
+</div>
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+}
+</script>
+
+<script type="module" src="{% static 'js/connexion.js' %}"></script>
 
 {% endblock %}

@@ -89,3 +89,11 @@ header {
     font-weight: normal;
 }
 
+.card-text {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.card-title {
+    color: #3a3a3a;
+}
