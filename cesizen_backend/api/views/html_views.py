@@ -10,17 +10,8 @@ def accueil(request):
     return render(request, 'accueil.html', {'informations': informations})
 
 
-@login_required
 def profil(request):
-    user_info = {
-        'Nom d\'utilisateur': request.user.username,
-        'Email': request.user.email,
-        'Prénom': request.user.first_name,
-        'Nom': request.user.last_name,
-    }
-
-    return render(request, 'profil.html', {'user_info': user_info})
-
+    return render(request, "profil.html")
 
 @login_required
 def profil_edit(request):
@@ -116,6 +107,9 @@ def deconnexion(request):
     messages.success(request, "Déconnexion réussie !")
     return redirect("accueil")
 
-def liste_exercices(request):
-    exercices = ExerciceRespiration.objects.all()
-    return render(request, 'exercices.html', {'exercices': exercices})
+def exercices(request):
+    return render(request, "exercices.html")
+
+def exercice_run(request, id):
+    exercice = get_object_or_404(ExerciceRespiration, id=id)
+    return render(request, "exercice_run.html", {"exercice": exercice})

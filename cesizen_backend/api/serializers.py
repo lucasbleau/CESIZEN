@@ -24,9 +24,10 @@ class ExerciceRespirationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HistoriqueExerciceSerializer(serializers.ModelSerializer):
+    exercice_nom = serializers.CharField(source='exercice.nom', read_only=True)
     class Meta:
         model = HistoriqueExercice
-        fields = '__all__'
+        fields = ['exercice_nom', 'date_effectue', 'duree_totale', 'commentaire']
 
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:

@@ -32,6 +32,10 @@
                         <a href="{% url 'profil_edit' %}" class="btn blue-bg-color btn-hover-b text-light">Modifier mes informations</a>
                     </div>
                 </div>
+                <h3 class="mt-5 mb-3">Historique des exercices</h3>
+                    <div id="historique-container">
+                        <p>Chargement en cours...</p>
+                    </div>
             </div>
         </div>
 
@@ -40,5 +44,6 @@
 </div>
 
 <script type="module" src="{% static 'js/profil.js' %}"></script>
+<script type="module" src="{% static 'js/historique_profil.js' %}"></script>
 
 {% endblock %}

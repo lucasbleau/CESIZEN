@@ -1,9 +1,27 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block title %}CESIZEN - Exercices de respiration{% endblock %}
 
 {% block content %}
+
+<div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header margin-bottom">
+    
+    <h2 class="text-center mb-4 blue-text-color">Exercices de Respiration</h2>
+
+    <!-- Loader affiché pendant le chargement -->
+    <div id="loader" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Chargement des exercices...</p>
+    </div>
+
+    <!-- Conteneur pour les cartes d'exercices -->
+    <div class="container">
+        <div class="row" id="exercices-container"></div>
+    </div>
+
+</div>
+
+<script src="{% static 'js/exercices.js' %}" type="module"></script>
 
 {% endblock %}

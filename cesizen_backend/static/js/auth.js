@@ -1,18 +1,27 @@
 export async function fetchWithAuth(url, options = {}) {
     const access = localStorage.getItem("access");
-
     const csrfToken = getCSRFToken();
 
-    options.headers = {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access,
-        "X-CSRFToken": csrfToken,
-        ...options.headers, 
-    };
+    if (!options.headers) {
+        options.headers = {};
+    }
+
+    options.headers["Content-Type"] = "application/json";
+    options.headers["X-CSRFToken"] = csrfToken;
+
+    if (access) {
+        options.headers["Authorization"] = "Bearer " + access;
+    }
+
+    if (!access) {
+        alert("Vous devez être connecté pour accéder à cette page.");
+        window.location.href = "/connexion/";
+        return;
+    }
 
     let response = await fetch(url, options);
 
-    if (response.status === 401) {
+    if (response.status === 401 && localStorage.getItem("refresh")) {
         const refresh = localStorage.getItem("refresh");
 
         const refreshRes = await fetch("/api/token/refresh/", {
@@ -24,7 +33,9 @@ export async function fetchWithAuth(url, options = {}) {
         if (refreshRes.ok) {
             const data = await refreshRes.json();
             localStorage.setItem("access", data.access);
-            options.headers.Authorization = "Bearer " + data.access;
+
+            options.headers["Authorization"] = "Bearer " + data.access;
+
             response = await fetch(url, options);
         } else {
             localStorage.clear();

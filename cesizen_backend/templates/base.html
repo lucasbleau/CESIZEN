@@ -20,7 +20,7 @@
         <header class="d-flex align-items-center justify-content-between w-100 px-4 py-4 shadow-bottom bg-light">
             <div class="d-flex align-items-center">
                 <a href="{% url 'accueil' %}" class="btn {% if request.path == '/' %}blue-bg-color-selected{% else %}blue-bg-color{% endif %} btn-hover-b rounded-1 text-light me-4">Accueil</a>
-                <a href="#exercices-content">Exercices</a>
+                <a href="{% url 'exercices' %}" class="btn blue-bg-color btn-hover-b rounded-1 text-light me-4">Exercices</a>
             </div>
 
             <h1 class="m-0 position-absolute start-50 translate-middle-x d-none d-md-block">CESI ZEN</h1>
@@ -37,48 +37,7 @@
         </footer>
     </div>
 
-    <script type="module">
-        import { fetchWithAuth, logout } from "{% static 'js/auth.js' %}";
-
-        const userZone = document.getElementById("user-zone");
-
-        async function renderUserHeader() {
-            const access = localStorage.getItem("access");
-
-            if (!access) {
-                userZone.innerHTML = `
-                    <a href="/connexion/" class="btn blue-bg-color btn-hover-b rounded-1 text-light me-4">Se connecter</a>
-                    <a href="/inscription/" class="btn blue-bg-color btn-hover btn-hover-b rounded-1 text-light">S'inscrire</a>
-                `;
-                return;
-            }
-
-            try {
-                const res = await fetchWithAuth("/api/profil/");
-                if (!res.ok) throw new Error();
-
-                const data = await res.json();
-                const isAdmin = data.role === "administrateur" || data.is_superuser;
-
-                userZone.innerHTML = `
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn blue-bg-color btn-hover-b text-light rounded-1" id="profil-btn">👤 ${data.username}</button>
-                        <a href="/profil/" class="btn btn-outline-secondary">Profil</a>
-                        <a href="/preferences/" class="btn btn-outline-secondary">Préférences</a>
-                        ${isAdmin ? `<a href="/admin/" class="btn btn-outline-secondary">Back office</a>` : ""}
-                        <button id="logout-btn" class="btn btn-danger btn-hover-r text-light">Déconnexion</button>
-                    </div>
-                `;
-
-                document.getElementById("logout-btn").addEventListener("click", logout);
-            } catch (err) {
-                localStorage.clear();
-                window.location.href = "/connexion/";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", renderUserHeader);
-    </script>
+<script type="module" src="{% static 'js/header.js' %}"></script>
 
 </body>
 </html>

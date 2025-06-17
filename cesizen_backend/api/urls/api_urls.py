@@ -4,16 +4,22 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import (
     ConnexionView, InscriptionView, DeconnexionView,
     AccueilView, ListeExercicesView,
-    ProfilView, UpgradeToAdminView
+    ProfilView, UpgradeToAdminView,
+    HistoriqueExerciceView
 )
 
 
 urlpatterns = [
     path('accueil/', AccueilView.as_view(), name='api_accueil'),
+
     path('connexion/', ConnexionView.as_view(), name='api_connexion'),
     path('inscription/', InscriptionView.as_view(), name='api_inscription'),
     path('deconnexion/', DeconnexionView.as_view(), name='api_deconnexion'),
+
     path('exercices/', ListeExercicesView.as_view(), name='api_exercices'),
+    
+    path('historique/', HistoriqueExerciceView.as_view(), name='api_historique'),
+
     path('profil/', ProfilView.as_view(), name='api_profil'),
     path('upgrade_admin/<int:user_id>/', UpgradeToAdminView.as_view(), name='api_upgrade_admin'),
 
