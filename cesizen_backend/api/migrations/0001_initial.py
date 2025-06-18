@@ -73,7 +73,6 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_effectue', models.DateTimeField(auto_now_add=True)),
                 ('duree_totale', models.IntegerField(help_text='Durée totale en secondes')),
-                ('commentaire', models.TextField(blank=True, null=True)),
                 ('exercice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='historique_exercices', to='api.exercicerespiration')),
                 ('utilisateur', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='historique_exercices', to=settings.AUTH_USER_MODEL)),
             ],

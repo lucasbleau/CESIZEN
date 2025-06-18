@@ -13,16 +13,14 @@ from api.serializers import ProfilSerializer, MessageResponseSerializer
 class ProfilView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses=ProfilSerializer)
     def get(self, request):
         user = request.user
-        data = {
+        return Response({
             "username": user.username,
             "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-        }
-        return Response(data)
+            "role": getattr(user, "role", None),
+            "is_superuser": user.is_superuser,
+        })
 
     @extend_schema(request=ProfilSerializer, responses=ProfilSerializer)
     def put(self, request):

@@ -27,7 +27,7 @@ class HistoriqueExerciceSerializer(serializers.ModelSerializer):
     exercice_nom = serializers.CharField(source='exercice.nom', read_only=True)
     class Meta:
         model = HistoriqueExercice
-        fields = ['exercice_nom', 'date_effectue', 'duree_totale', 'commentaire']
+        fields = ['exercice_nom', 'date_effectue', 'duree_totale']
 
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:

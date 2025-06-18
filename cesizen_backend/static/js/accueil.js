@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loader.style.display = "block";
 
-    fetch("/api/accueil/")
+    fetch("/api/accueil/", {
+        method: "GET",
+        credentials: "omit",
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error("Erreur lors de la récupération des données");

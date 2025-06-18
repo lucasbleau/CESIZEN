@@ -8,26 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let sequence = [];
     let interval = null;
     let running = false;
+    let startTime = null;
 
-    const urlParts = window.location.pathname.split("/");
-    const exerciceId = urlParts[urlParts.length - 2]; 
+    const exerciceData = JSON.parse(document.getElementById("exercice-data").textContent);
+    const exerciceId = exerciceData.id;
 
-    fetch(`/api/exercices/`)
-        .then(res => res.json())
-        .then(data => {
-            const exercice = data.find(e => e.id === parseInt(exerciceId));
-            if (!exercice) throw new Error("Exercice non trouvé.");
-
-            sequence = [
-                { phase: "Inspiration", duration: exercice.duree_inspiration, color: "#3498db" },
-                { phase: "Apnée", duration: exercice.duree_apnee, color: "#f39c12" },
-                { phase: "Expiration", duration: exercice.duree_expiration, color: "#e74c3c" },
-            ];
-        })
-        .catch(err => {
-            alert("Erreur de chargement de l'exercice.");
-            console.error(err);
-        });
+    sequence = [
+        { phase: "Inspiration", duration: exerciceData.duree_inspiration, color: "#3498db" },
+        { phase: "Apnée", duration: exerciceData.duree_apnee, color: "#f39c12" },
+        { phase: "Expiration", duration: exerciceData.duree_expiration, color: "#e74c3c" },
+    ];
 
     function updatePhase(phase) {
         phaseEl.textContent = phase.phase;
@@ -36,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function startSequence(index = 0) {
         if (!running || index >= sequence.length) {
-            stopSequence();
+            stopSequence(true); // terminé
             return;
         }
 
@@ -56,22 +46,67 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
-    function stopSequence() {
+    function stopSequence(ended = false) {
         running = false;
         clearInterval(interval);
-        phaseEl.textContent = "Exercice interrompu.";
         timerEl.textContent = "0";
+
+        if (ended) {
+            phaseEl.textContent = "Exercice terminé.";
+        } else {
+            phaseEl.textContent = "Exercice interrompu.";
+        }
+
         circle.style.backgroundColor = "#85c1e9";
+
+        if (startTime) {
+            const dureeTotale = Math.floor((Date.now() - startTime) / 1000);
+            enregistrerHistorique(exerciceId, dureeTotale);
+            startTime = null;
+        }
     }
 
     startBtn.addEventListener("click", () => {
         if (!running) {
             running = true;
+            startTime = Date.now();
             startSequence();
         }
     });
 
     stopBtn.addEventListener("click", () => {
-        stopSequence();
+        stopSequence(false);
     });
 });
+
+async function enregistrerHistorique(exerciceId, dureeTotale) {
+    try {
+        const response = await fetch("/api/historique/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include", 
+            body: JSON.stringify({
+                exercice_id: exerciceId,
+                duree_totale: dureeTotale
+            }),
+        });
+
+        if (response.status === 401) {
+            console.warn("Utilisateur non connecté : historique non enregistré.");
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erreur API :", errorData);
+        } else {
+            console.log("Historique enregistré avec succès !");
+        }
+
+    } catch (error) {
+        console.error("Erreur réseau :", error);
+    }
+}
+

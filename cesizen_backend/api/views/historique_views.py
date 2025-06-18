@@ -6,9 +6,15 @@ from drf_spectacular.utils import extend_schema
 from api.models import ExerciceRespiration, HistoriqueExercice
 from api.serializers import HistoriqueExerciceSerializer
 
-@extend_schema(tags=["Historique"])
+
+@extend_schema(tags=["Historique"], responses=HistoriqueExerciceSerializer(many=True))
 class HistoriqueExerciceView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        historiques = HistoriqueExercice.objects.filter(utilisateur=request.user).order_by('-date_effectue')
+        serializer = HistoriqueExerciceSerializer(historiques, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         exercice_id = request.data.get("exercice_id")
@@ -25,17 +31,7 @@ class HistoriqueExerciceView(APIView):
         HistoriqueExercice.objects.create(
             utilisateur=request.user,
             exercice=exercice,
-            duree_totale=duree_totale
+            duree_totale=duree_totale,
         )
 
-        return Response({"message": "Historique enregistré"}, status=status.HTTP_201_CREATED)
-
-
-@extend_schema(tags=["Historique"], responses=HistoriqueExerciceSerializer(many=True))
-class HistoriqueExerciceView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        historiques = HistoriqueExercice.objects.filter(utilisateur=request.user).order_by('-date_effectue')
-        serializer = HistoriqueExerciceSerializer(historiques, many=True)
-        return Response(serializer.data)
+        return Response({"message": "Historique enregistré"}, status=201)

@@ -30,7 +30,6 @@ class Historique_Exercice {
     - ID_Historique : int (PK)
     - Date_effectué : datetime
     - Durée_totale : int
-    - Commentaire : string
     + enregistrerHistorique()
 }
 

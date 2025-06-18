@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from api.models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Information
+from django.core.serializers.json import DjangoJSONEncoder
 
 def accueil(request):
     informations = Information.objects.all()
@@ -112,4 +114,13 @@ def exercices(request):
 
 def exercice_run(request, id):
     exercice = get_object_or_404(ExerciceRespiration, id=id)
-    return render(request, "exercice_run.html", {"exercice": exercice})
+    exercice_json = json.dumps({
+        "id": exercice.id,
+        "duree_inspiration": exercice.duree_inspiration,
+        "duree_apnee": exercice.duree_apnee,
+        "duree_expiration": exercice.duree_expiration,
+    }, cls=DjangoJSONEncoder)
+    return render(request, "exercice_run.html", {
+        "exercice": exercice,
+        "exercice_json": exercice_json
+    })

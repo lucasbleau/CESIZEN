@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <th>Exercice</th>
                 <th>Date</th>
                 <th>Durée (s)</th>
-                <th>Commentaire</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td>${entry.exercice_nom}</td>
                     <td>${new Date(entry.date_effectue).toLocaleString()}</td>
                     <td>${entry.duree_totale}</td>
-                    <td>${entry.commentaire || "<i>—</i>"}</td>
                 </tr>
             `).join('')}
         </tbody>

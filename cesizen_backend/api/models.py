@@ -47,7 +47,6 @@ class HistoriqueExercice(models.Model):
     exercice = models.ForeignKey(ExerciceRespiration, on_delete=models.CASCADE, related_name='historique_exercices')
     date_effectue = models.DateTimeField(auto_now_add=True)
     duree_totale = models.IntegerField(help_text="Durée totale en secondes")
-    commentaire = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.utilisateur.username} - {self.exercice.nom} - {self.date_effectue}"

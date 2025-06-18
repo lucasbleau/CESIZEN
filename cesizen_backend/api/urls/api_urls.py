@@ -2,19 +2,20 @@ from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import (
-    ConnexionView, InscriptionView, DeconnexionView,
+    InscriptionView, LogoutView,
     AccueilView, ListeExercicesView,
     ProfilView, UpgradeToAdminView,
-    HistoriqueExerciceView
+    HistoriqueExerciceView, CookieLoginView,
+    RefreshAccessTokenView
 )
 
 
 urlpatterns = [
     path('accueil/', AccueilView.as_view(), name='api_accueil'),
 
-    path('connexion/', ConnexionView.as_view(), name='api_connexion'),
+    path('connexion/', CookieLoginView.as_view(), name='api_connexion'),
     path('inscription/', InscriptionView.as_view(), name='api_inscription'),
-    path('deconnexion/', DeconnexionView.as_view(), name='api_deconnexion'),
+    path('deconnexion/', LogoutView.as_view(), name='api_deconnexion'),
 
     path('exercices/', ListeExercicesView.as_view(), name='api_exercices'),
     
@@ -26,6 +27,6 @@ urlpatterns = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/cookie/', CookieLoginView.as_view(), name='cookie_login'),
+    path("token/refresh-cookie/", RefreshAccessTokenView.as_view(), name="refresh-cookie"),
 ]

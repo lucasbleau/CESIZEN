@@ -37,7 +37,9 @@
         </footer>
     </div>
 
-<script type="module" src="{% static 'js/header.js' %}"></script>
+{% now "U" as timestamp %}
+
+<script type="module" src="{% static 'js/header.js' %}?v={{ timestamp }}"></script>
 
 </body>
 </html>

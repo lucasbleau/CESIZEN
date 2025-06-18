@@ -1,53 +1,35 @@
-export async function fetchWithAuth(url, options = {}) {
-    const access = localStorage.getItem("access");
-    const csrfToken = getCSRFToken();
+export async function fetchWithAuth(url, options = {}, retry = true) {
+    options.credentials = "include";
 
-    if (!options.headers) {
-        options.headers = {};
-    }
-
+    if (!options.headers) options.headers = {};
     options.headers["Content-Type"] = "application/json";
-    options.headers["X-CSRFToken"] = csrfToken;
-
-    if (access) {
-        options.headers["Authorization"] = "Bearer " + access;
-    }
-
-    if (!access) {
-        alert("Vous devez être connecté pour accéder à cette page.");
-        window.location.href = "/connexion/";
-        return;
-    }
 
     let response = await fetch(url, options);
 
-    if (response.status === 401 && localStorage.getItem("refresh")) {
-        const refresh = localStorage.getItem("refresh");
+    if (response.status === 401 && retry) {
+        const publicPaths = ["/connexion/", "/inscription/", "/", "/exercices/"];
+        if (publicPaths.includes(window.location.pathname)) {
+            return response; 
+        }
 
-        const refreshRes = await fetch("/api/token/refresh/", {
+        console.warn("Token expiré, tentative de rafraîchissement...");
+        const refresh = await fetch("/api/token/refresh-cookie/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refresh }),
+            credentials: "include",
         });
 
-        if (refreshRes.ok) {
-            const data = await refreshRes.json();
-            localStorage.setItem("access", data.access);
-
-            options.headers["Authorization"] = "Bearer " + data.access;
-
-            response = await fetch(url, options);
+        if (refresh.ok) {
+            return await fetchWithAuth(url, options, false);
         } else {
-            localStorage.clear();
+            console.warn("Échec du refresh. Redirection connexion...");
             window.location.href = "/connexion/";
-            return;
         }
     }
 
     return response;
 }
 
-function getCSRFToken() {
+export function getCSRFToken() {
     const name = "csrftoken";
     const cookies = document.cookie.split("; ");
     for (let cookie of cookies) {
@@ -58,31 +40,16 @@ function getCSRFToken() {
     return "";
 }
 
-export function logout() {
-    localStorage.clear();
-    window.location.href = "/connexion/";
-}
 
-export function startAutoLogout(accessToken) {
+export async function logout() {
     try {
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
-        const expTime = payload.exp * 1000;
-        const now = Date.now();
-        const delay = expTime - now;
-
-        if (delay > 0) {
-            setTimeout(() => {
-                alert("Votre session a expiré. Vous avez été déconnecté.");
-                logout();
-            }, delay);
-        }
-    } catch (error) {
-        console.error("Erreur de décodage du token :", error);
-        logout();
+        await fetch("/api/deconnexion/", {
+            method: "POST",
+            credentials: "include",
+        });
+    } catch (err) {
+        console.warn("Erreur pendant la déconnexion :", err);
     }
-}
 
-const existingAccessToken = localStorage.getItem("access");
-if (existingAccessToken) {
-    startAutoLogout(existingAccessToken);
+    window.location.href = "/connexion/";
 }
