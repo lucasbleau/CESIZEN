@@ -18,22 +18,21 @@ class ProfilView(APIView):
         return Response({
             "username": user.username,
             "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "role": getattr(user, "role", None),
             "is_superuser": user.is_superuser,
+            "last_login": user.last_login,
         })
 
-    @extend_schema(request=ProfilSerializer, responses=ProfilSerializer)
     def put(self, request):
         user = request.user
-        serializer = ProfilSerializer(data=request.data)
-
+        serializer = ProfilSerializer(user, data=request.data, partial=True, context={'request': request})
+        
         if serializer.is_valid():
-            for field in ['username', 'email', 'first_name', 'last_name']:
-                if field in serializer.validated_data:
-                    setattr(user, field, serializer.validated_data[field])
-            user.save()
+            serializer.save()
             return Response(serializer.data)
-
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

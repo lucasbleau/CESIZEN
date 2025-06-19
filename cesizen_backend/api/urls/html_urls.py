@@ -8,7 +8,7 @@ urlpatterns = [
     path('deconnexion/', deconnexion, name='deconnexion'),
     path('preferences/', preferences, name='preferences'),
     path('profil/', profil, name='profil'),
-    path('profil/edit/', profil_edit, name='profil_edit'),
+    path("profil/edit/", profil_edit, name="profil_edit"),
     path('exercices/', exercices, name='exercices'),
     path("exercices/<int:id>/", exercice_run, name="exercice_run")
 ]

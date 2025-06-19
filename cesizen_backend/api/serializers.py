@@ -7,11 +7,22 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
 
-class ProfilSerializer(serializers.Serializer):
-    username = serializers.CharField(required=False)
-    email = serializers.EmailField(required=False)
-    first_name = serializers.CharField(required=False, allow_blank=True)
-    last_name = serializers.CharField(required=False, allow_blank=True)
+class ProfilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Utilisateur
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if Utilisateur.objects.exclude(pk=user.pk).filter(username=value).exists():
+            raise serializers.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+        return value
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if Utilisateur.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError("Cet email est déjà utilisé.")
+        return value
     
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:

@@ -11,33 +11,11 @@ def accueil(request):
     informations = Information.objects.all()
     return render(request, 'accueil.html', {'informations': informations})
 
-
 def profil(request):
     return render(request, "profil.html")
 
-@login_required
 def profil_edit(request):
-    user = request.user
-
-    if request.method == "POST":
-        user.username = request.POST.get("Nom d'utilisateur", user.username)
-        user.email = request.POST.get("Email", user.email)
-        user.first_name = request.POST.get("Prénom", user.first_name)
-        user.last_name = request.POST.get("Nom", user.last_name)
-
-        user.save()
-        return redirect('profil')
-
-    user_info = {
-        "Nom d'utilisateur": user.username,
-        "Email": user.email,
-        "Prénom": user.first_name,
-        "Nom": user.last_name,
-    }
-
-    return render(request, 'profil_edit.html', {'user_info': user_info})
-
-
+    return render(request, "profil_edit.html")
 
 def preferences(request):
     return render(request, 'preferences.html')
