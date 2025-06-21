@@ -14,19 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const exerciceId = exerciceData.id;
 
     sequence = [
-        { phase: "Inspiration", duration: exerciceData.duree_inspiration, color: "#3498db" },
-        { phase: "Apnée", duration: exerciceData.duree_apnee, color: "#f39c12" },
-        { phase: "Expiration", duration: exerciceData.duree_expiration, color: "#e74c3c" },
+        { phase: "Inspiration", duration: exerciceData.duree_inspiration, color: "#3498db", animate: true },
+        { phase: "Apnée",        duration: exerciceData.duree_apnee,        color: "#f39c12", animate: false },
+        { phase: "Expiration",   duration: exerciceData.duree_expiration,   color: "#e74c3c", animate: false },
     ];
 
     function updatePhase(phase) {
         phaseEl.textContent = phase.phase;
         circle.style.backgroundColor = phase.color;
+
+        if (phase.animate) {
+            circle.classList.add("breathing");
+        } else {
+            circle.classList.remove("breathing");
+        }
     }
 
     function startSequence(index = 0) {
         if (!running || index >= sequence.length) {
-            stopSequence(true); // terminé
+            stopSequence(true);
             return;
         }
 
@@ -50,14 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
         running = false;
         clearInterval(interval);
         timerEl.textContent = "0";
+        circle.classList.remove("breathing");
+        circle.style.backgroundColor = "#85c1e9";
 
         if (ended) {
             phaseEl.textContent = "Exercice terminé.";
         } else {
             phaseEl.textContent = "Exercice interrompu.";
         }
-
-        circle.style.backgroundColor = "#85c1e9";
 
         if (startTime) {
             const dureeTotale = Math.floor((Date.now() - startTime) / 1000);
@@ -109,4 +115,3 @@ async function enregistrerHistorique(exerciceId, dureeTotale) {
         console.error("Erreur réseau :", error);
     }
 }
-

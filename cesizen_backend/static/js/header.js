@@ -23,10 +23,9 @@ async function renderUserHeader() {
         console.log("Réponse /api/profil :", res.status);
         userZone.innerHTML = `
             <div class="d-flex align-items-center gap-2">
-                <button class="btn blue-bg-color btn-hover-b text-light rounded-1" id="profil-btn">👤 ${data.username}</button>
-                <a href="/profil/" class="btn btn-outline-secondary">Profil</a>
-                ${isAdmin ? `<a href="/admin/" class="btn btn-outline-secondary">Admin</a>` : ""}
-                <button id="logout-btn" class="btn btn-danger">Déconnexion</button>
+                <a href="/profil/" class="toggle-btn">👤 ${data.username}</a>
+                ${isAdmin ? `<a href="/admin/" class="toggle-btn">Admin</a>` : ""}
+                <button id="logout-btn" class="toggle-btn active">Déconnexion</button>
             </div>
         `;
 
@@ -35,8 +34,8 @@ async function renderUserHeader() {
     } catch (err) {
         console.warn("Erreur lors de la détection utilisateur :", err);
         userZone.innerHTML = `
-            <a href="/connexion/" class="btn btn-primary me-2">Se connecter</a>
-            <a href="/inscription/" class="btn btn-secondary">S'inscrire</a>
+            <a href="/connexion/" class="toggle-btn active">Se connecter</a>
+            <a href="/inscription/" class="toggle-btn">S'inscrire</a>
         `;
     }
 }

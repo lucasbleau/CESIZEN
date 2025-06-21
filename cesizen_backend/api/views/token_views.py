@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.conf import settings
@@ -28,5 +29,5 @@ class RefreshAccessTokenView(APIView):
             )
             return response
 
-        except TokenError:
-            return Response({"error": "Refresh token invalide ou expiré."}, status=status.HTTP_401_UNAUTHORIZED)
+        except (TokenError, InvalidToken) as e:
+            return Response({"error": str(e)}, status=401)

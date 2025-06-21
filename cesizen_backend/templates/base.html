@@ -13,29 +13,28 @@
     <title>{% block title %}Mon Site{% endblock %}</title>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-    <div class="d-flex flex-column justify-content-between full-vh bg">
+    <header class="btn-toggle-group d-flex justify-content-between align-items-center p-4">            
+        <div class="d-flex align-items-center">
+            <a href="{% url 'accueil' %}" class="toggle-btn">Accueil</a>
+            <a href="{% url 'exercices' %}" class="toggle-btn">Exercices</a>
+        </div>
 
-        <header class="d-flex align-items-center justify-content-between w-100 px-4 py-4 shadow-bottom bg-light">
-            <div class="d-flex align-items-center">
-                <a href="{% url 'accueil' %}" class="btn {% if request.path == '/' %}blue-bg-color-selected{% else %}blue-bg-color{% endif %} btn-hover-b rounded-1 text-light me-4">Accueil</a>
-                <a href="{% url 'exercices' %}" class="btn blue-bg-color btn-hover-b rounded-1 text-light me-4">Exercices</a>
-            </div>
+        <h1 class="m-0 position-absolute start-50 translate-middle-x d-none d-md-block">CESI ZEN</h1>
 
-            <h1 class="m-0 position-absolute start-50 translate-middle-x d-none d-md-block">CESI ZEN</h1>
+        <div id="user-zone" class="d-flex align-items-center"></div>
+    </header>
 
-            <div id="user-zone" class="d-flex align-items-center"></div>
-        </header>
+    <main class="flex-fill">
+        {% block content %}{% endblock %}
+    </main>
 
-        <main class="container">
-            {% block content %}{% endblock %}
-        </main>
-
-        <footer class="text-center py-3 bg-light mt-auto shadow-top">
+    <footer class="btn-toggle-group text-center py-4 mt-auto">
+        <div class="w-100 d-flex justify-content-center align-items-center">
             <small>© 2025 CESIZEN – Tous droits réservés</small>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
 {% now "U" as timestamp %}
 

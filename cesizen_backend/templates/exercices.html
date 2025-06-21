@@ -4,15 +4,15 @@
 {% block title %}CESIZEN - Exercices de respiration{% endblock %}
 
 {% block content %}
-<div class="container margin-top-header margin-bottom">
-    <h2 class="text-center mb-4 blue-text-color">Exercices de Respiration</h2>
+<div class="container py-5 bg-relaxe">
+    <h2 class="text-center fw-bold mb-5 text-dark">Exercices de Respiration</h2>
 
     <div id="loader" class="text-center my-4">
         <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2">Chargement des exercices...</p>
+        <p class="mt-3 text-muted">Chargement des exercices...</p>
     </div>
 
-    <div id="exercices-list" class="row justify-content-center"></div>
+    <div id="exercices-list" class="row gy-4 justify-content-center"></div>
 </div>
 
 <script src="{% static 'js/exercices.js' %}" type="module"></script>

@@ -1,42 +1,36 @@
 import { fetchWithAuth } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const container = document.getElementById("historique-container");
+    const tableBody = document.getElementById("historique-table");
 
     const res = await fetchWithAuth("/api/historique/");
-    console.log("Profil API status:", res.status);
     if (!res.ok) {
-        container.innerHTML = "<p class='text-danger'>Erreur lors du chargement de l'historique.</p>";
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-danger text-center">Erreur lors du chargement de l'historique.</td>
+            </tr>`;
         return;
     }
 
     const data = await res.json();
     if (data.length === 0) {
-        container.innerHTML = "<p>Aucun exercice effectué pour le moment.</p>";
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center text-muted">Aucun exercice effectué pour le moment.</td>
+            </tr>`;
         return;
     }
 
-    const table = document.createElement("table");
-    table.className = "table table-striped";
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th>Exercice</th>
-                <th>Date</th>
-                <th>Durée (s)</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${data.map(entry => `
-                <tr>
-                    <td>${entry.exercice_nom}</td>
-                    <td>${new Date(entry.date_effectue).toLocaleString()}</td>
-                    <td>${entry.duree_totale}</td>
-                </tr>
-            `).join('')}
-        </tbody>
-    `;
+    tableBody.innerHTML = "";
 
-    container.innerHTML = "";
-    container.appendChild(table);
+    data.forEach(entry => {
+        const row = `
+            <tr>
+                <td>${entry.exercice_nom}</td>
+                <td>${new Date(entry.date_effectue).toLocaleString()}</td>
+                <td>${entry.duree_totale} s</td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
 });

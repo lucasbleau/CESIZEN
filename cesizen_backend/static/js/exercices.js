@@ -25,14 +25,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         data.forEach(ex => {
             const card = document.createElement("div");
-            card.className = "col-md-6 col-lg-4 mb-4";
+            card.className = "col-12 col-md-6 col-lg-5 col-xl-4 d-flex justify-content-center";
 
             card.innerHTML = `
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
+                <div class="card glass-card shadow-sm w-100">
+                    <div class="card-body w-75 d-flex flex-column">
                         <h5 class="card-title">${ex.nom}</h5>
-                        <p class="card-text flex-grow-1">${ex.description}</p>
-                        <a href="/exercices/${ex.id}/" class="btn btn-primary">Lancer</a>
+                        <p class="card-text flex-grow-1">Difficluté : ${ex.description}</p>
+                        <a href="/exercices/${ex.id}/" class="btn">Lancer</a>
                     </div>
                 </div>
             `;

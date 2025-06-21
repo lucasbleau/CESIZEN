@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from api.serializers import InscriptionSerializer, MessageResponseSerializer, ErrorResponseSerializer
@@ -95,6 +95,8 @@ class InscriptionView(APIView):
         if not user:
             return Response({"error": "Erreur lors de l'authentification."}, status=status.HTTP_400_BAD_REQUEST)
 
+        login(request, user)
+
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
 
@@ -131,6 +133,18 @@ class LogoutView(APIView):
 
     def post(self, request):
         response = Response({"detail": "Déconnexion réussie."})
-        response.delete_cookie("access_token", samesite="Lax", path="/")
-        response.delete_cookie("refresh_token", samesite="Lax", path="/")
+
+        response.delete_cookie(
+            "access_token",
+            path="/",
+            domain=None,
+            samesite="Lax"
+        )
+        response.delete_cookie(
+            "refresh_token",
+            path="/",
+            domain=None,
+            samesite="Lax"
+        )
+
         return response

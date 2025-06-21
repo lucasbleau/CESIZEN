@@ -2,7 +2,7 @@ import { fetchWithAuth } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const tbody = document.getElementById("profil-edit-table");
-    const form = document.querySelector("form");
+    const form = document.getElementById("profil-edit-form");
 
     const res = await fetchWithAuth("/api/profil/");
     if (!res.ok) {

@@ -4,134 +4,55 @@
 
 {% block content %}
 
-    <div class="d-flex flex-column align-items-center justify-content-center w-100 margin-top-header margin-bottom">
+<div class="container my-5 d-flex justify-content-center">
+    <div class="glass-card w-100" style="max-width: 600px;">
+        <h2 class="text-center exercice-title mb-4">Créer un compte</h2>
 
-        <div class="d-flex flex-column align-items-center justify-content-center w-50 shadow bg-light rounded-3 p-4">
+        <form method="POST" class="d-flex flex-column gap-3 px-3" style="width: 100%;">
+            {% csrf_token %}
 
-            <h2 class="text-center mb-4 blue-text-color">Inscription</h2>
-
-            <form class="d-flex flex-column align-items-center justify-content-center w-100">
-                
-                {% csrf_token %}
-
-                <label for="email" class="mb-2">Email*</label>
-                <input type="email" name="email" id="email" class="mb-3 rounded-2 p-1 w-50" required value="{{ request.POST.email|default:'' }}">
-
-                <label for="username" class="mb-2">Nom d'utilisateur*</label>
-                <input type="text" name="username" id="username" class="mb-3 rounded-2 p-1 w-50" required value="{{ request.POST.username|default:'' }}">
-
-                <label for="password1" class="mb-2">Mot de passe*</label>
-                <div class="position-relative w-50">
-                    <input type="password" name="password1" id="password1" class="mb-3 rounded-2 p-1 w-100" required>
-                    <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword('password1')" style="cursor: pointer;">
-                        👁
-                    </div>
-                </div>
-
-                <label for="password2" class="mb-2">Confirmez le mot de passe*</label>
-                <div class="position-relative w-50">
-                    <input type="password" name="password2" id="password2" class="mb-3 rounded-2 p-1 w-100" required>
-                    <div type="button" class="position-absolute end-0 top-0 h-100 px-3 py-1" onclick="togglePassword('password2')" style="cursor: pointer;">
-                        👁
-                    </div>
-                </div>
-
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="text-center w-50 mb-3 alert alert-danger" id="message">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <div class="rounded-2 p-2 my-2 w-50 d-flex flex-column align-items-center text-center">
-                    <p>Critères à respecter pour le mot de passe :</p>
-                    <div>
-                        <ul class="list-unstyled">
-                            <li id="criteria-length" class="invalid">Avoir 12 caractères</li>
-                            <li id="criteria-lowercase" class="invalid">Une minuscule</li>
-                            <li id="criteria-uppercase" class="invalid">Une majuscule</li>
-                            <li id="criteria-special" class="invalid">Un caractère spécial</li>
-                        </ul>
-                    </div>
-                </div>
-            
-                <button id="submit-btn" type="submit" class="btn blue-bg-color btn-hover-b text-light my-3" disabled>S'inscrire</button>
-                
-            </form>
-
-            <div class="d-flex flex-row">
-                <p class="me-2">Déjà inscrit ?</p>
-                <a href="{% url 'connexion' %}" class="text-decoration-none link-opacity-50-hover">Se connecter</a>
+            <div class="form-group">
+                <label for="email" class="form-label">Email*</label>
+                <input type="email" name="email" id="email" class="form-control" required value="{{ request.POST.email|default:'' }}">
             </div>
 
-        </div>
+            <div class="form-group">
+                <label for="username" class="form-label">Nom d'utilisateur*</label>
+                <input type="text" name="username" id="username" class="form-control" required value="{{ request.POST.username|default:'' }}">
+            </div>
 
+            <div class="form-group position-relative">
+                <label for="password1" class="form-label">Mot de passe*</label>
+                <input type="password" name="password1" id="password1" class="form-control" required>
+                <span class="password-toggle" onclick="togglePassword('password1')">👁</span>
+            </div>
+
+            <div class="form-group position-relative">
+                <label for="password2" class="form-label">Confirmer le mot de passe*</label>
+                <input type="password" name="password2" id="password2" class="form-control" required>
+                <span class="password-toggle" onclick="togglePassword('password2')">👁</span>
+            </div>
+
+            <div class="p-3 rounded bg-white bg-opacity-50 text-dark">
+                <p class="mb-2 fw-bold">Critères du mot de passe :</p>
+                <ul class="list-unstyled mb-0">
+                    <li id="criteria-length" class="invalid">• Minimum 12 caractères</li>
+                    <li id="criteria-lowercase" class="invalid">• Une minuscule</li>
+                    <li id="criteria-uppercase" class="invalid">• Une majuscule</li>
+                    <li id="criteria-special" class="invalid">• Un caractère spécial</li>
+                </ul>
+            </div>
+
+            <button id="submit-btn" type="submit" class="btn btn-primary w-100 mt-2" disabled>S'inscrire</button>
+
+            <div class="text-center mt-3">
+                <p>Déjà inscrit ? <a href="{% url 'connexion' %}" class="link-opacity-50-hover text-decoration-none">Se connecter</a></p>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const passwordInput = document.getElementById("password1");
-            const confirmPasswordInput = document.getElementById("password2");
-            const emailInput = document.getElementById("email");
-            const usernameInput = document.getElementById("username");
-            const submitButton = document.getElementById("submit-btn");
-            const criteria = {
-                length: document.getElementById("criteria-length"),
-                lowercase: document.getElementById("criteria-lowercase"),
-                uppercase: document.getElementById("criteria-uppercase"),
-                special: document.getElementById("criteria-special")
-            };
-    
-            function validatePassword() {
-                const password = passwordInput.value.trim();
-                const email = emailInput.value.trim();
-                const username = usernameInput.value.trim();
-    
-                const isLongEnough = password.length >= 12;
-                const hasLowercase = /[a-z]/.test(password);
-                const hasUppercase = /[A-Z]/.test(password);
-                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-                const allFieldsFilled = email !== "" && username !== "" && password !== "";
-    
-                criteria.length.classList.toggle("valid", isLongEnough);
-                criteria.length.classList.toggle("invalid", !isLongEnough);
-    
-                criteria.lowercase.classList.toggle("valid", hasLowercase);
-                criteria.lowercase.classList.toggle("invalid", !hasLowercase);
-    
-                criteria.uppercase.classList.toggle("valid", hasUppercase);
-                criteria.uppercase.classList.toggle("invalid", !hasUppercase);
-    
-                criteria.special.classList.toggle("valid", hasSpecialChar);
-                criteria.special.classList.toggle("invalid", !hasSpecialChar);
-    
-                const allValid = isLongEnough && hasLowercase && hasUppercase && hasSpecialChar && allFieldsFilled;
-    
-                submitButton.disabled = !allValid;
-            }
-    
-            [passwordInput, confirmPasswordInput, emailInput, usernameInput].forEach(input => {
-                input.addEventListener("input", validatePassword);
-            });
-    
-            validatePassword();
-        });
-        
-    
-
-        function togglePassword(inputId) {
-            var passwordInput = document.getElementById(inputId);
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-            } else {
-                passwordInput.type = "password";
-            }
-        }
-
-    </script>
-
-    <script src="{% static 'js/inscription.js' %}"></script>
+<script src="{% static 'js/inscription.js' %}"></script>
 
 {% endblock %}

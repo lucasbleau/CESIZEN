@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
+    const form = document.getElementById("connexion-form");
     const emailInput = form.querySelector("input[name='email']");
     const passwordInput = form.querySelector("input[name='password']");
     const rememberCheckbox = document.getElementById("remember-me");
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const rememberMe = rememberCheckbox?.checked || false;
 
         const messageContainer = document.getElementById("message");
-        if (messageContainer) messageContainer.remove();
+        messageContainer.innerHTML = "";
 
         const response = await fetch("/api/token/cookie/", {
             method: "POST",
@@ -27,10 +27,16 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "/";
         } else {
             const errorDiv = document.createElement("div");
-            errorDiv.className = "text-center mb-3 text-danger";
-            errorDiv.id = "message";
+            errorDiv.className = "alert alert-danger text-center mt-2 mx-auto";
             errorDiv.textContent = data.detail || data.error || "Une erreur s’est produite.";
-            form.insertBefore(errorDiv, form.querySelector(".d-flex"));
+            messageContainer.appendChild(errorDiv);
+
+            setTimeout(() => errorDiv.remove(), 5000);
         }
     });
 });
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === "password" ? "text" : "password";
+}
