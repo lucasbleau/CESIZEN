@@ -38,12 +38,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'api.authentications.JWTAuthenticationFromCookie',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=20),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 SESSION_COOKIE_SECURE = False
@@ -53,19 +54,11 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'CESIZEN API',
     'DESCRIPTION': 'Documentation Swagger de l’API CESIZEN',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_INCLUDE_SCHEMA': True, 
     'SCHEMA_PATH_PREFIX': '/api',
-    'PREPROCESSING_HOOKS': [],
-    'POSTPROCESSING_HOOKS': [],
-    'COMPONENT_SPLIT_REQUEST': True,
-    'ENABLE_WARNINGS': True,
-    'SORT_OPERATIONS': True,
-    'SORT_OPERATION_PARAMETERS': True,
-    'SWAGGER_UI_DIST': 'https://cdn.jsdelivr.net/npm/swagger-ui-dist/',
-
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'DISABLE_ERRORS_AND_WARNINGS': True,
-    'APPEND_COMPONENTS': {},
-    'ENUM_NAME_OVERRIDES': {},
 }
 
 INSTALLED_APPS = [
@@ -78,6 +71,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.apps.ApiConfig',
     'drf_spectacular',
+    'drf_spectacular_sidecar'
 ]
 
 MIDDLEWARE = [

@@ -25,7 +25,6 @@ urlpatterns = [
     path('upgrade_admin/<int:user_id>/', UpgradeToAdminView.as_view(), name='api_upgrade_admin'),
 
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
     path('token/cookie/', CookieLoginView.as_view(), name='cookie_login'),
     path("token/refresh-cookie/", RefreshAccessTokenView.as_view(), name="refresh-cookie"),

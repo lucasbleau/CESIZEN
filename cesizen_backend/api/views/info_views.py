@@ -6,7 +6,7 @@ from api.models import Information
 from api.serializers import InformationSerializer
 
 
-@extend_schema(tags=['Accueil'])
+@extend_schema(tags=['Accueil'], responses=InformationSerializer(many=True))
 class AccueilView(APIView):
     permission_classes = [AllowAny]
 

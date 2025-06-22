@@ -6,7 +6,7 @@ from api.models import ExerciceRespiration
 from api.serializers import ExerciceRespirationSerializer
 
 
-@extend_schema(tags=['Exercices'], responses=ExerciceRespirationSerializer)
+@extend_schema(tags=['Exercices'], responses=ExerciceRespirationSerializer(many=True))
 class ListeExercicesView(APIView):
     permission_classes = [AllowAny]
 

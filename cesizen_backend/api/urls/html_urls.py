@@ -1,5 +1,6 @@
 from django.urls import path
 from api.views.html_views import accueil, connexion, exercice_run, exercices, inscription, deconnexion, preferences, profil, profil_edit
+from drf_spectacular.views import SpectacularSwaggerView
 
 urlpatterns = [
     path('', accueil, name='accueil'),
@@ -10,5 +11,6 @@ urlpatterns = [
     path('profil/', profil, name='profil'),
     path("profil/edit/", profil_edit, name="profil_edit"),
     path('exercices/', exercices, name='exercices'),
-    path("exercices/<int:id>/", exercice_run, name="exercice_run")
+    path("exercices/<int:id>/", exercice_run, name="exercice_run"),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

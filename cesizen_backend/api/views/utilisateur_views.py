@@ -7,32 +7,21 @@ from drf_spectacular.utils import OpenApiResponse
 from django.shortcuts import get_object_or_404
 from api.models import Utilisateur
 from api.serializers import ProfilSerializer, MessageResponseSerializer
+from api.serializers import UtilisateurSerializer
 
-
-@extend_schema(tags=['Profil'])
+@extend_schema(tags=['Profil'], responses=UtilisateurSerializer)
 class ProfilView(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
-        user = request.user
-        return Response({
-            "username": user.username,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "role": getattr(user, "role", None),
-            "is_superuser": user.is_superuser,
-            "last_login": user.last_login,
-        })
+        serializer = UtilisateurSerializer(request.user)
+        return Response(serializer.data)
 
     def put(self, request):
-        user = request.user
-        serializer = ProfilSerializer(user, data=request.data, partial=True, context={'request': request})
-        
+        serializer = UtilisateurSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -21,6 +21,7 @@ async function renderUserHeader() {
         const isAdmin = data.role === "administrateur" || data.is_superuser;
         console.log("Cookies envoyés:", document.cookie);
         console.log("Réponse /api/profil :", res.status);
+        console.log("Utilisateur reçu :", data);
         userZone.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <a href="/profil/" class="toggle-btn">👤 ${data.username}</a>

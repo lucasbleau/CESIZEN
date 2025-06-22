@@ -27,18 +27,21 @@ class ProfilSerializer(serializers.ModelSerializer):
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = ['id', 'username', 'email', 'role']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'last_login', 'is_superuser']
 
 class ExerciceRespirationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExerciceRespiration
         fields = '__all__'
 
-class HistoriqueExerciceSerializer(serializers.ModelSerializer):
-    exercice_nom = serializers.CharField(source='exercice.nom', read_only=True)
-    class Meta:
-        model = HistoriqueExercice
-        fields = ['exercice_nom', 'date_effectue', 'duree_totale']
+class HistoriqueExerciceSerializer(serializers.Serializer):
+    exercice_id = serializers.IntegerField()
+    duree_totale = serializers.IntegerField()
+
+    def validate_exercice_id(self, value):
+        if not ExerciceRespiration.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Exercice introuvable.")
+        return value
 
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:
