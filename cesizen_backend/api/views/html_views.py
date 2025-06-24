@@ -100,5 +100,6 @@ def exercice_run(request, id):
     }, cls=DjangoJSONEncoder)
     return render(request, "exercice_run.html", {
         "exercice": exercice,
-        "exercice_json": exercice_json
+        "exercice_json": exercice_json,
+        "user_authenticated": request.user.is_authenticated,
     })

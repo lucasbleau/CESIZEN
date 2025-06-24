@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     tableBody.innerHTML = "";
 
     data.forEach(entry => {
+        console.log(entry);
         const row = `
             <tr>
                 <td>${entry.exercice_nom}</td>

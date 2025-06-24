@@ -29,7 +29,7 @@ class HistoriqueExerciceView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        historiques = HistoriqueExercice.objects.filter(utilisateur=request.user).order_by('-date_effectue')
+        historiques = HistoriqueExercice.objects.filter(utilisateur=request.user)
         serializer = HistoriqueExerciceSerializer(historiques, many=True)
         return Response(serializer.data)
 

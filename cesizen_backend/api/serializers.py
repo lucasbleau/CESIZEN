@@ -34,14 +34,12 @@ class ExerciceRespirationSerializer(serializers.ModelSerializer):
         model = ExerciceRespiration
         fields = '__all__'
 
-class HistoriqueExerciceSerializer(serializers.Serializer):
-    exercice_id = serializers.IntegerField()
-    duree_totale = serializers.IntegerField()
-
-    def validate_exercice_id(self, value):
-        if not ExerciceRespiration.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Exercice introuvable.")
-        return value
+class HistoriqueExerciceSerializer(serializers.ModelSerializer):
+    exercice_nom = serializers.CharField(source="exercice.nom", read_only=True)
+    
+    class Meta:
+        model = HistoriqueExercice
+        fields = ["exercice_nom", "date_effectue", "duree_totale"]
 
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:

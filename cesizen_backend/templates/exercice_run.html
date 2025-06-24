@@ -5,8 +5,6 @@
 
 {% block content %}
 
-
-
 <div class="exercice-container">
 
     <div class="text-start mb-4">
@@ -14,7 +12,6 @@
             ← Retour aux exercices
         </a>
     </div>
-
 
     <h2 class="exercice-title">Exercice de Respiration</h2>
     <p class="exercice-phase" id="phase">Préparation...</p>
@@ -34,5 +31,10 @@
     {{ exercice_json|safe }}
 </script>
 
+<script>
+    window.USER_AUTH = "{{ user_authenticated|yesno:'true,false' }}";
+</script>
+
 <script src="{% static 'js/exercice_run.js' %}"></script>
+
 {% endblock %}

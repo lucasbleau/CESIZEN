@@ -86,6 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function enregistrerHistorique(exerciceId, dureeTotale) {
+    if (!window.USER_AUTH || !hasAccessToken()) {
+        console.log("Utilisateur non connecté, historique ignoré.");
+        return;
+    }
     try {
         const response = await fetch("/api/historique/", {
             method: "POST",
