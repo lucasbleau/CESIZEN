@@ -6,8 +6,9 @@ from api.views import (
     AccueilView, ListeExercicesView,
     ProfilView, UpgradeToAdminView,
     HistoriqueExerciceView, CookieLoginView,
-    RefreshAccessTokenView
+    RefreshAccessTokenView, DetailExerciceView
 )
+
 
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('deconnexion/', LogoutView.as_view(), name='api_deconnexion'),
 
     path('exercices/', ListeExercicesView.as_view(), name='api_exercices'),
+    path("exercices/<int:pk>/", DetailExerciceView.as_view(), name="api_exercice_detail"),
     
     path('historique/', HistoriqueExerciceView.as_view(), name='api_historique'),
 

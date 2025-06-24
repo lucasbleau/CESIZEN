@@ -30,20 +30,16 @@ class HistoriqueExerciceView(APIView):
 
     def get(self, request):
         historiques = HistoriqueExercice.objects.filter(utilisateur=request.user)
-        serializer = HistoriqueExerciceSerializer(historiques, many=True)
-        return Response(serializer.data)
+        ser = HistoriqueExerciceSerializer(historiques, many=True)
+        return Response(ser.data)
 
     def post(self, request):
-        serializer = HistoriqueExerciceSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({"error": "Données invalides."}, status=400)
-
-        exercice = ExerciceRespiration.objects.get(id=serializer.validated_data["exercice_id"])
-
-        HistoriqueExercice.objects.create(
-            utilisateur=request.user,
-            exercice=exercice,
-            duree_totale=serializer.validated_data["duree_totale"]
-        )
-
-        return Response({"message": "Historique enregistré"}, status=201)
+        ser = HistoriqueExerciceSerializer(data=request.data, context={"request": request})
+        
+        if ser.is_valid():
+            historique = ser.save()
+            return Response(
+                HistoriqueExerciceSerializer(historique).data,
+                status=201
+            )
+        return Response(ser.errors, status=400)

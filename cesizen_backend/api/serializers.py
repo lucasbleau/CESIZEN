@@ -35,11 +35,22 @@ class ExerciceRespirationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HistoriqueExerciceSerializer(serializers.ModelSerializer):
+    exercice_id = serializers.IntegerField(write_only=True)
     exercice_nom = serializers.CharField(source="exercice.nom", read_only=True)
-    
+
     class Meta:
         model = HistoriqueExercice
-        fields = ["exercice_nom", "date_effectue", "duree_totale"]
+        fields = ["exercice_id", "exercice_nom", "date_effectue", "duree_totale"]
+
+    def create(self, validated_data):
+        exercice_id = validated_data.pop("exercice_id")
+        exercice = ExerciceRespiration.objects.get(id=exercice_id)
+        utilisateur = self.context["request"].user
+        return HistoriqueExercice.objects.create(
+            utilisateur=utilisateur,
+            exercice=exercice,
+            **validated_data
+        )
 
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:

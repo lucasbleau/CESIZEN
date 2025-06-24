@@ -6,6 +6,7 @@ function isPublic(pathname = window.location.pathname) {
   );
 }
 
+console.log("auth.js chargé");
 
 export async function fetchWithAuth(url, options = {}, retry = true) {
   options.credentials = "include";

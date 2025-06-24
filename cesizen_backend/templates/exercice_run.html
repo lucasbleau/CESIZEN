@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<div class="exercice-container">
+<div class="exercice-container" data-ex-id="{{ ex_id }}">
 
     <div class="text-start mb-4">
         <a href="{% url 'exercices' %}" class="btn btn-outline-primary">
@@ -27,14 +27,10 @@
 
 </div>
 
-<script id="exercice-data" type="application/json">
-    {{ exercice_json|safe }}
-</script>
-
 <script>
     window.USER_AUTH = "{{ user_authenticated|yesno:'true,false' }}";
 </script>
 
-<script src="{% static 'js/exercice_run.js' %}"></script>
+<script type="module" src="{% static 'js/exercice_run.js' %}"></script>
 
 {% endblock %}
