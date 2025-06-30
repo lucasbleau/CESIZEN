@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -32,8 +33,17 @@ class UtilisateurSerializer(serializers.ModelSerializer):
 
 class ExerciceRespirationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ExerciceRespiration
-        fields = '__all__'
+        model  = ExerciceRespiration
+        fields = "__all__"
+
+    def validate(self, attrs):
+        erreurs = {}
+        for champ in ("duree_inspiration", "duree_apnee", "duree_expiration"):
+            if attrs.get(champ, 0) < 0:
+                erreurs[champ] = "La durée ne peut pas être négative."
+        if erreurs:
+            raise serializers.ValidationError(erreurs)
+        return attrs
 
 class HistoriqueExerciceSerializer(serializers.ModelSerializer):
     exercice_id = serializers.IntegerField(write_only=True)
@@ -45,7 +55,10 @@ class HistoriqueExerciceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         exercice_id = validated_data.pop("exercice_id")
-        exercice = ExerciceRespiration.objects.get(id=exercice_id)
+        try:
+            exercice = ExerciceRespiration.objects.get(id=exercice_id)
+        except ExerciceRespiration.DoesNotExist:
+            raise ValidationError({"exercice_id": "Exercice non trouvé"})
         utilisateur = self.context["request"].user
         return HistoriqueExercice.objects.create(
             utilisateur=utilisateur,
@@ -63,10 +76,24 @@ class ConnexionSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 class InscriptionSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    username = serializers.CharField()
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    email      = serializers.EmailField()
+    username   = serializers.CharField()
+    password1  = serializers.CharField(write_only=True)
+    password2  = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+
+        if attrs["password1"] != attrs["password2"]:
+            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            email=validated_data["email"],
+            username=validated_data["username"],
+            password=validated_data["password1"],
+        )
+        return user
 
 class MessageResponseSerializer(serializers.Serializer):
     detail = serializers.CharField()
