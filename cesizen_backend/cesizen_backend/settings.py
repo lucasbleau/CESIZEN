@@ -17,6 +17,7 @@ import sqlite3
 from django.db.backends.signals import connection_created
 from django.dispatch import receiver
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

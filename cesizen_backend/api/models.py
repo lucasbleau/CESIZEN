@@ -18,10 +18,10 @@ class Utilisateur(AbstractUser):
     date_inscription = models.DateTimeField(auto_now_add=True)
     statut = models.CharField(max_length=20, default='actif')
 
-    def save(self, *args, **kwargs):
-        if self.pk is None and not self.password.startswith('pbkdf2_'):
-            self.set_password(self.password)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.pk is None and not self.password.startswith('pbkdf2_'):
+    #         self.set_password(self.password)
+    #     super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         HistoriqueExercice.objects.filter(utilisateur=self).delete()

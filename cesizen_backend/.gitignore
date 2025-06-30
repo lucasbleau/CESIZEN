@@ -1,0 +1,39 @@
+# Environnement virtuel Python
+venv/
+
+# Fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers SQLite et DB temporaires
+*.sqlite3
+*.db
+
+# Fichiers de configuration/env
+.env
+*.env
+
+# Fichiers de logs
+*.log
+
+# Fichiers systèmes (Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# Fichiers générés par l'éditeur
+.vscode/
+.idea/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django
+staticfiles/
+media/
+
+# Rapport Word/README si générés temporairement
+*.docx
+*.pdf
