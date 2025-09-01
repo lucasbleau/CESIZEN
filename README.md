@@ -70,3 +70,48 @@ docker compose exec app npm run seed
 docker compose exec db psql -U cesizen -d cesizen_import -c "\dt"
 docker compose exec db psql -U cesizen -d cesizen_import -c "SELECT count(*) FROM breathing_exercises;"
 ```
+
+# CESIZen – Déploiement Docker unifié (Django + Postgres)
+
+## Architecture
+- Django (API + pages HTML)
+- Postgres (données)
+- Volume persistant: pgdata
+- (Optionnel futur) Nginx reverse proxy + TLS
+
+## Lancement
+```
+docker compose up -d --build
+curl http://localhost:8000/health/
+```
+
+## Migration effectuée
+- Ancienne base MariaDB exportée (mysqldump + fixture JSON)
+- Import des données dans Postgres via loaddata
+- Séquences ajustées
+
+## Variables (.env)
+POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, DATABASE_URL, DJANGO_SECRET_KEY
+
+## Sauvegarde base
+```
+docker compose exec db pg_dump -U $POSTGRES_USER $POSTGRES_DB > backup_$(date +%Y%m%d_%H%M%S).sql
+```
+
+## Sécurité (prochaines étapes)
+- Changer DJANGO_SECRET_KEY en production
+- Activer DEBUG = False
+- Restreindre ALLOWED_HOSTS
+- Ajouter TLS (Nginx + certs)
+- Mettre en place sauvegardes planifiées + rotation
+- Ajouter contrôle d’accès JWT (simplejwt) ou sessions selon besoin
+
+## Tests
+```
+docker compose exec web pytest
+```
+
+## Rebuild dépendances
+```
+docker compose build web
+```

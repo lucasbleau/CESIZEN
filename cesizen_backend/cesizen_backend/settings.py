@@ -16,6 +16,7 @@ from pathlib import Path
 import sqlite3
 from django.db.backends.signals import connection_created
 from django.dispatch import receiver
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,18 +29,19 @@ SESSION_COOKIE_AGE = 1209600  # 2 semaines
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i1j*rsqoccw#!)kmrhdd2ge#))(#a8)j_fkag0s%=x^vq9vcl)'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY","dev-insecure")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api.authentications.JWTAuthenticationFromCookie',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Retirer la classe custom tant que simplejwt n’est pas confirmé opérationnel
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
@@ -52,27 +54,20 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'CESIZEN API',
-    'DESCRIPTION': 'Documentation Swagger de l’API CESIZEN',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True, 
-    'SCHEMA_PATH_PREFIX': '/api',
-    'SWAGGER_UI_DIST': 'SIDECAR',
-    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
-    'DISABLE_ERRORS_AND_WARNINGS': True,
+    "TITLE": "CESIZen API",
+    "VERSION": "1.0.0",
 }
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'api.apps.ApiConfig',
-    'drf_spectacular',
-    'drf_spectacular_sidecar'
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "drf_spectacular",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -122,16 +117,8 @@ def enforce_foreign_keys(connection):
         cursor.execute("PRAGMA foreign_keys = ON;")
         cursor.close()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cesizen_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
-}
+DATABASE_URL = os.getenv("DATABASE_URL","postgres://cesizen:password@db:5432/cesizen")
+DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=300)}
 
 def activate_foreign_keys(sender, connection, **kwargs):
     enforce_foreign_keys(connection)
@@ -160,9 +147,9 @@ AUTH_USER_MODEL = 'api.Utilisateur'
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "fr-fr"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 
@@ -172,14 +159,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR,"static")
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
