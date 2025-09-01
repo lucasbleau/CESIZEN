@@ -1,0 +1,21 @@
+Résumé sécurité — actions et recommandations (livrable)
+
+Faits réalisés:
+- App runs as non-root user in Dockerfile.
+- Reverse proxy (nginx) configured; option TLS via mounted certs provided.
+- Persistent volume used for Postgres (pgdata).
+- Basic healthchecks for db and app present.
+
+Recommandations (prioritaires):
+1. Secrets: move from .env to a secret manager (Vault/Azure KeyVault/AWS Secrets Manager) for prod.
+2. TLS: use Let's Encrypt via Traefik for automatic certs in production; mkcert only for dev.
+3. DB backups: schedule pg_dump and offsite storage; test restore procedure.
+4. Image scanning: run trivy/clair on built images pre-deploy.
+5. Resource limits & restart policies: add limits to docker-compose for production.
+6. Migrations: use a migration tool (Knex/Prisma/Flyway) and run migrations in CI/CD.
+7. Monitoring: expose metrics and centralize logs.
+
+Commands to include in delivery:
+- docker compose up -d --build
+- docker compose logs -f app db nginx
+- .\scripts\backup_pg.ps1

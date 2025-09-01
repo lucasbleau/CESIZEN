@@ -1,5 +1,17 @@
 from django.contrib import admin
 from .models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Information
+from django.contrib.admin import AdminSite
+
+class MyAdminSite(AdminSite):
+    site_header = "Administration CESIZEN"
+    site_title = "CESIZEN Admin"
+    index_title = "Tableau de bord CESIZEN"
+
+    class Media:
+        css = {
+            "all": ("css/admin.css",)
+        }
+        js = ("js/admin.js",)
 
 class ExerciceRespirationAdmin(admin.ModelAdmin):
     list_display = ('nom', 'duree_inspiration', 'duree_apnee', 'duree_expiration')
@@ -35,7 +47,10 @@ class InformationAdmin(admin.ModelAdmin):
     search_fields = ('titre', 'createur__username')
     list_filter = ('date_creation', 'date_modification')
 
-admin.site.register(Utilisateur, UtilisateurAdmin)
-admin.site.register(ExerciceRespiration, ExerciceRespirationAdmin)
-admin.site.register(HistoriqueExercice, HistoriqueExerciceAdmin)
-admin.site.register(Information, InformationAdmin)
+
+custom_admin_site = MyAdminSite(name='custom_admin')
+
+custom_admin_site.register(Utilisateur, UtilisateurAdmin)
+custom_admin_site.register(ExerciceRespiration, ExerciceRespirationAdmin)
+custom_admin_site.register(HistoriqueExercice, HistoriqueExerciceAdmin)
+custom_admin_site.register(Information, InformationAdmin)

@@ -1,8 +1,8 @@
-from django.contrib import admin
+from api.admin import custom_admin_site
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', custom_admin_site.urls),
 
     path('', include('api.urls.html_urls')),
 

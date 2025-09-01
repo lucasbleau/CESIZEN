@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="card glass-card shadow-sm w-100">
                     <div class="card-body w-75 d-flex flex-column">
                         <h5 class="card-title">${ex.nom}</h5>
-                        <p class="card-text flex-grow-1">Difficluté : ${ex.description}</p>
+                        <p class="card-text flex-grow-1">Difficulté : ${ex.description}</p>
                         <a href="/exercices/${ex.id}/" class="btn">Lancer</a>
                     </div>
                 </div>

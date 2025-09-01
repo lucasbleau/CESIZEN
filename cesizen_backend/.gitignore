@@ -37,3 +37,12 @@ media/
 # Rapport Word/README si générés temporairement
 *.docx
 *.pdf
+
+node_modules
+cesizen_backend/my-docker-app/node_modules/
+
+/docker/nginx/certs/*
+!.docker/nginx/certs/.keep
+
+/docker/nginx/certs/*
+/backups/*
