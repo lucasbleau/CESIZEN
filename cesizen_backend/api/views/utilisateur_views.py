@@ -3,27 +3,25 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from drf_spectacular.utils import OpenApiResponse
 from django.shortcuts import get_object_or_404
 from api.models import Utilisateur
-from api.serializers import ProfilSerializer, MessageResponseSerializer
-from api.serializers import UtilisateurSerializer
+from api.serializers import UtilisateurSerializer, MessageResponseSerializer
 
 @extend_schema(tags=['Profil'], responses=UtilisateurSerializer)
-class ProfilView(APIView):
+class ProfileMeView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
-        serializer = UtilisateurSerializer(request.user)
-        return Response(serializer.data)
+        return Response(UtilisateurSerializer(request.user).data)
 
     def put(self, request):
-        serializer = UtilisateurSerializer(request.user, data=request.data, partial=True, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        ser = UtilisateurSerializer(request.user, data=request.data, partial=True, context={'request': request})
+        if ser.is_valid():
+            ser.save()
+            return Response(ser.data)
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    patch = put
 
 @extend_schema(tags=['Admin'])
 class UpgradeToAdminView(APIView):

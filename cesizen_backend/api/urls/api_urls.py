@@ -1,33 +1,18 @@
 from django.urls import path
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from api.views import (
-    InscriptionView, LogoutView,
-    AccueilView, ListeExercicesView,
-    ProfilView, UpgradeToAdminView,
-    HistoriqueExerciceView, CookieLoginView,
-    RefreshAccessTokenView, DetailExerciceView
-)
-
-
+from api.views.utilisateur_views import ProfileMeView
+from api.views.info_views import AccueilView
+from api.views.exercice_views import ListeExercicesView, DetailExerciceView
+from api.views.historique_views import HistoriqueExerciceView
+from api.views.cookie_views import CookieLoginView, CookieRefreshView, LogoutView, InscriptionView
 
 urlpatterns = [
-    path('accueil/', AccueilView.as_view(), name='api_accueil'),
-
-    path('connexion/', CookieLoginView.as_view(), name='api_connexion'),
-    path('inscription/', InscriptionView.as_view(), name='api_inscription'),
-    path('deconnexion/', LogoutView.as_view(), name='api_deconnexion'),
-
-    path('exercices/', ListeExercicesView.as_view(), name='api_exercices'),
+    path("profil/", ProfileMeView.as_view(), name="api_profil"),
+    path("accueil/", AccueilView.as_view(), name="api_accueil"),
+    path("exercices/", ListeExercicesView.as_view(), name="api_exercices"),
     path("exercices/<int:pk>/", DetailExerciceView.as_view(), name="api_exercice_detail"),
-    
-    path('historique/', HistoriqueExerciceView.as_view(), name='api_historique'),
-
-    path('profil/', ProfilView.as_view(), name='api_profil'),
-    path('upgrade_admin/<int:user_id>/', UpgradeToAdminView.as_view(), name='api_upgrade_admin'),
-
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-
-    path('token/cookie/', CookieLoginView.as_view(), name='cookie_login'),
-    path("token/refresh-cookie/", RefreshAccessTokenView.as_view(), name="refresh-cookie"),
+    path("historique/", HistoriqueExerciceView.as_view(), name="api_historique"),
+    path("token/cookie/", CookieLoginView.as_view(), name="cookie_login"),
+    path("token/cookie/refresh/", CookieRefreshView.as_view(), name="cookie_refresh"),
+    path("deconnexion/", LogoutView.as_view(), name="api_deconnexion"),
+    path("inscription/", InscriptionView.as_view(), name="api_inscription"),
 ]

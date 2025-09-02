@@ -36,18 +36,30 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "api.Utilisateur"
+
+AUTHENTICATION_BACKENDS = [
+    "api.backends.EmailAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    # Retirer la classe custom tant que simplejwt n’est pas confirmé opérationnel
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.auth.CookieJWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
 
 SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "SIGNING_KEY": SECRET_KEY,
+    "ALGORITHM": "HS256",
     "AUTH_HEADER_TYPES": ("Bearer",),
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
 }
 
 SESSION_COOKIE_SECURE = False
@@ -71,18 +83,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-AUTHENTICATION_BACKENDS = [
-    'api.backends.EmailAuthBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 LOGIN_URL = '/connexion/'
@@ -117,8 +125,14 @@ def enforce_foreign_keys(connection):
         cursor.execute("PRAGMA foreign_keys = ON;")
         cursor.close()
 
-DATABASE_URL = os.getenv("DATABASE_URL","postgres://cesizen:password@db:5432/cesizen")
-DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=300)}
+DATABASE_URL = os.getenv("DATABASE_URL","postgres://cesi:cesi@localhost:5432/cesizen")
+DATABASES = {
+    "default": dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=False
+    )
+}
 
 def activate_foreign_keys(sender, connection, **kwargs):
     enforce_foreign_keys(connection)
@@ -142,8 +156,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'api.Utilisateur'
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -160,7 +172,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR,"static")
+STATIC_ROOT = os.path.join(BASE_DIR,"staticfiles")
+STATICFILES_DIRS = [p for p in [os.path.join(BASE_DIR,"static")] if os.path.isdir(p)]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # Default primary key field type

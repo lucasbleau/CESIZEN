@@ -1,166 +1,80 @@
 from urllib import response
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
-from django.contrib.auth import authenticate, login
-from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema, OpenApiResponse
-from api.serializers import ConnexionSerializer, InscriptionSerializer, MessageResponseSerializer, ErrorResponseSerializer
-from api.models import Utilisateur
-from django.conf import settings
-from django.contrib.auth import login
+from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework import status
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-@extend_schema(
-    tags=["Authentification"],
-    request=ConnexionSerializer,
-    responses={
-        200: MessageResponseSerializer,
-        401: ErrorResponseSerializer
-    }
-)
+User = get_user_model()
+CK = dict(httponly=True, secure=not settings.DEBUG, samesite="Lax", path="/")
+
 class CookieLoginView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
-        serializer = ConnexionSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({"error": "Données invalides."}, status=status.HTTP_400_BAD_REQUEST)
-
-        email = serializer.validated_data["email"]
-        password = serializer.validated_data["password"]
-        remember = request.data.get("remember", False)
-
-        user = authenticate(request, username=email, password=password)
-        if user is None:
-            return Response({"error": "Email ou mot de passe incorrect."}, status=status.HTTP_401_UNAUTHORIZED)
-
+        data = getattr(request, "data", {})
+        email = data.get("email") or data.get("username") or request.POST.get("email") or request.POST.get("username")
+        password = data.get("password") or request.POST.get("password")
+        next_url = request.GET.get("next") or data.get("next") or "/"
+        if not email or not password:
+            return Response({"error": "Email et mot de passe requis."}, status=400)
+        user = authenticate(request, email=email, password=password)
+        if not user:
+            return Response({"error": "Identifiants invalides."}, status=401)
         login(request, user)
-        
-        refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+        r = RefreshToken.for_user(user)
+        a = r.access_token
+        # Redirection serveur si requête HTML classique
+        wants_html = "text/html" in request.headers.get("Accept","")
+        if wants_html and next_url.startswith("/"):
+            resp = redirect(next_url)
+        else:
+            resp = Response({"detail": "Connexion réussie.", "redirect_to": next_url})
+        resp.set_cookie("access_token", str(a), max_age=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()), **CK)
+        resp.set_cookie("refresh_token", str(r), max_age=int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()), **CK)
+        return resp
 
-        response = Response({"message": "Connexion réussie."}, status=status.HTTP_200_OK)
+class CookieRefreshView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        token_str = request.COOKIES.get("refresh_token")
+        if not token_str:
+            return Response({"error": "Refresh token manquant."}, status=401)
+        try:
+            r = RefreshToken(token_str)
+            a = r.access_token
+            resp = Response({"detail": "Access régénéré."})
+            resp.set_cookie("access_token", str(a), max_age=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()), **CK)
+            return resp
+        except TokenError:
+            return Response({"error": "Refresh invalide."}, status=401)
 
-        is_secure = not settings.DEBUG  # Utilise HTTPS si en production
+class CookieLogoutView(APIView):
+    def post(self, request):
+        logout(request)
+        resp = Response({"detail": "Déconnexion."})
+        resp.delete_cookie("access_token", path="/")
+        resp.delete_cookie("refresh_token", path="/")
+        return resp
 
-        access_max_age = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()) if remember else None
-        refresh_max_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()) if remember else None
-
-        response.set_cookie(
-            key="access_token",
-            value=str(access),
-            httponly=True,
-            secure=is_secure,
-            samesite="Lax",
-            max_age=access_max_age,
-            path="/"
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=str(refresh),
-            httponly=True,
-            secure=is_secure,
-            samesite="Lax",
-            max_age=refresh_max_age,
-            path="/"
-        )
-
-        return response
-
-
-
-@extend_schema(
-    tags=["Inscription"],
-    request=InscriptionSerializer,
-    responses={
-        201: MessageResponseSerializer,
-        400: ErrorResponseSerializer,
-    }
-)
 class InscriptionView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
-        data = request.data
+        data = getattr(request, "data", {})
         email = data.get("email")
         username = data.get("username")
-        password1 = data.get("password1")
-        password2 = data.get("password2")
-        remember = data.get("remember", False)
+        password = data.get("password")
+        if not all([email, username, password]):
+            return Response({"error": "Champs manquants."}, status=400)
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email déjà utilisé."}, status=400)
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Nom déjà utilisé."}, status=400)
+        u = User(email=email, username=username)
+        u.set_password(password)
+        u.save()
+        return Response({"detail": "Compte créé."}, status=201)
 
-        if password1 != password2:
-            return Response({"error": "Les mots de passe ne correspondent pas."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if Utilisateur.objects.filter(email=email).exists():
-            return Response({"error": "Cet email est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if Utilisateur.objects.filter(username=username).exists():
-            return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
-
-        utilisateur = Utilisateur.objects.create_user(email=email, username=username, password=password1)
-
-        user = authenticate(request, username=email, password=password1)
-        if not user:
-            return Response({"error": "Erreur lors de l'authentification."}, status=status.HTTP_400_BAD_REQUEST)
-
-        login(request, user)
-
-        refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
-
-        response = Response({"detail": "Inscription réussie."}, status=status.HTTP_201_CREATED)
-
-        is_secure = not settings.DEBUG
-
-        access_max_age = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()) if remember else None
-        refresh_max_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()) if remember else None
-
-        response.set_cookie(
-            key="access_token",
-            value=str(access),
-            httponly=True,
-            secure=is_secure,
-            samesite="Lax",
-            max_age=access_max_age,
-            path="/"
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=str(refresh),
-            httponly=True,
-            secure=is_secure,
-            samesite="Lax",
-            max_age=refresh_max_age,
-            path="/"
-        )
-        return response
-
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        response = Response({"detail": "Déconnexion réussie."})
-
-        response.delete_cookie(
-            "access_token",
-            path="/",
-            domain=None,
-            samesite="Lax"
-        )
-        response.delete_cookie(
-            "refresh_token",
-            path="/",
-            domain=None,
-            samesite="Lax"
-        )
-
-        return response
+class LogoutView(CookieLogoutView):
+    pass

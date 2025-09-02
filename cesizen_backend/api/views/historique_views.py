@@ -1,14 +1,9 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
-from api.models import ExerciceRespiration, HistoriqueExercice
-from api.serializers import (
-    HistoriqueExerciceSerializer,
-    MessageResponseSerializer,
-    ErrorResponseSerializer
-)
+from api.models import HistoriqueExercice
+from api.serializers import HistoriqueExerciceSerializer, ErrorResponseSerializer, MessageResponseSerializer
 
 
 @extend_schema(
@@ -18,28 +13,19 @@ from api.serializers import (
 )
 @extend_schema(
     request=HistoriqueExerciceSerializer,
-    responses={
-        201: MessageResponseSerializer,
-        400: ErrorResponseSerializer,
-        404: ErrorResponseSerializer
-    },
+    responses={201: HistoriqueExerciceSerializer, 400: ErrorResponseSerializer},
     methods=["POST"]
 )
 class HistoriqueExerciceView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        historiques = HistoriqueExercice.objects.filter(utilisateur=request.user)
-        ser = HistoriqueExerciceSerializer(historiques, many=True)
-        return Response(ser.data)
+        qs = HistoriqueExercice.objects.filter(utilisateur=request.user).select_related("exercice").order_by("-date_effectue")
+        return Response(HistoriqueExerciceSerializer(qs, many=True).data)
 
     def post(self, request):
         ser = HistoriqueExerciceSerializer(data=request.data, context={"request": request})
-        
         if ser.is_valid():
-            historique = ser.save()
-            return Response(
-                HistoriqueExerciceSerializer(historique).data,
-                status=201
-            )
+            obj = ser.save()
+            return Response(HistoriqueExerciceSerializer(obj).data, status=201)
         return Response(ser.errors, status=400)

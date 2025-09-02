@@ -1,8 +1,16 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from api.models import (
+    ExerciceRespiration,
+    HistoriqueExercice,
+    Information,
+    Utilisateur,  # si ton modèle custom s'appelle Utilisateur
+)
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 User = get_user_model()
-from api.models import Utilisateur, ExerciceRespiration, HistoriqueExercice, Information
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,12 +37,20 @@ class ProfilSerializer(serializers.ModelSerializer):
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'last_login', 'is_superuser']
+        fields = ("id", "email", "username", "role", "is_superuser")
+        read_only_fields = ("id", "role", "is_superuser")
 
 class ExerciceRespirationSerializer(serializers.ModelSerializer):
     class Meta:
-        model  = ExerciceRespiration
-        fields = "__all__"
+        model = ExerciceRespiration
+        fields = (
+            "id",
+            "nom",
+            "duree_inspiration",
+            "duree_apnee",
+            "duree_expiration",
+            "description",
+        )
 
     def validate(self, attrs):
         erreurs = {}
@@ -45,58 +61,43 @@ class ExerciceRespirationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(erreurs)
         return attrs
 
-class HistoriqueExerciceSerializer(serializers.ModelSerializer):
-    exercice_id = serializers.IntegerField(write_only=True)
-    exercice_nom = serializers.CharField(source="exercice.nom", read_only=True)
-
-    class Meta:
-        model = HistoriqueExercice
-        fields = ["exercice_id", "exercice_nom", "date_effectue", "duree_totale"]
-
-    def create(self, validated_data):
-        exercice_id = validated_data.pop("exercice_id")
-        try:
-            exercice = ExerciceRespiration.objects.get(id=exercice_id)
-        except ExerciceRespiration.DoesNotExist:
-            raise ValidationError({"exercice_id": "Exercice non trouvé"})
-        utilisateur = self.context["request"].user
-        return HistoriqueExercice.objects.create(
-            utilisateur=utilisateur,
-            exercice=exercice,
-            **validated_data
-        )
-
 class InformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Information
-        fields = '__all__'
+        fields = ("id", "titre", "contenu", "date_creation", "date_modification")
+        read_only_fields = ("id", "date_creation", "date_modification")
 
-class ConnexionSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
+class HistoriqueExerciceSerializer(serializers.ModelSerializer):
+    exercice = ExerciceRespirationSerializer(read_only=True)
+    exercice_id = serializers.PrimaryKeyRelatedField(
+        queryset=ExerciceRespiration.objects.all(),
+        source="exercice",
+        write_only=True
+    )
 
-class InscriptionSerializer(serializers.Serializer):
-    email      = serializers.EmailField()
-    username   = serializers.CharField()
-    password1  = serializers.CharField(write_only=True)
-    password2  = serializers.CharField(write_only=True)
-
-    def validate(self, attrs):
-
-        if attrs["password1"] != attrs["password2"]:
-            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
-        return attrs
+    class Meta:
+        model = HistoriqueExercice
+        fields = (
+            "id",
+            "exercice",
+            "exercice_id",
+            "date_effectue",
+            "duree_totale",
+        )
+        read_only_fields = ("id", "date_effectue")
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data["email"],
-            username=validated_data["username"],
-            password=validated_data["password1"],
-        )
-        return user
+        validated_data["utilisateur"] = self.context["request"].user
+        return super().create(validated_data)
 
 class MessageResponseSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 class ErrorResponseSerializer(serializers.Serializer):
     error = serializers.CharField()
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = User.EMAIL_FIELD
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer

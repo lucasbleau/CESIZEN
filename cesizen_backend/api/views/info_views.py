@@ -12,6 +12,5 @@ class AccueilView(APIView):
 
     @extend_schema(responses=InformationSerializer)
     def get(self, request):
-        informations = Information.objects.all()
-        serializer = InformationSerializer(informations, many=True)
-        return Response(serializer.data)
+        infos = Information.objects.all().order_by("-date_modification")
+        return Response(InformationSerializer(infos, many=True).data)

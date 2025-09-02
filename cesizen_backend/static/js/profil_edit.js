@@ -1,5 +1,38 @@
 import { fetchWithAuth } from "./auth.js";
 
+function getCookie(name){
+  const m = document.cookie.match('(^|;)\\s*'+name+'=([^;]+)');
+  return m ? decodeURIComponent(m.pop()) : "";
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("profil-edit-form");
+  if (!form) return;
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const data = {
+      username: form.querySelector("[name='username']").value,
+      email: form.querySelector("[name='email']").value
+    };
+    const res = await fetch("/api/profil/", {
+      method: "PUT",
+      headers: {
+        "Content-Type":"application/json",
+        "X-CSRFToken": getCookie("csrftoken")
+      },
+      credentials: "include",
+      body: JSON.stringify(data)
+    });
+    if (res.ok){
+      const j = await res.json();
+      alert("Profil mis à jour");
+      location.href = "/profil/";
+    } else {
+      const err = await res.json().catch(()=>({}));
+      alert("Erreur: "+JSON.stringify(err));
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
     const tbody = document.getElementById("profil-edit-table");
     const form = document.getElementById("profil-edit-form");
