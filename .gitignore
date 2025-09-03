@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 *.pyo
-.env
+# .env
 pgdata/
 backups/
 full_fixture*.json
