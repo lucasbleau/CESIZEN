@@ -8,8 +8,5 @@ full_fixture*.json
 backup_*.sql
 docker-compose.old.yml
 .pytest_cache/
-.coverage
-htmlcov/
-node_modules/
-package-lock.json
 yarn.lock
+.venv

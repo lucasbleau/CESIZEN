@@ -35,26 +35,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: cesizen_backend/requirements.txt
       - name: Install deps
         run: |
           pip install --upgrade pip
           pip install -r cesizen_backend/requirements.txt
-          pip install pytest pytest-django
+          pip install pytest pytest-django flake8 coverage
       - name: Migrate
         run: python cesizen_backend/manage.py migrate --noinput
-      - name: Smoke test
-        run: python cesizen_backend/manage.py check
       - name: Lint
         run: flake8 cesizen_backend/api
-      - name: Coverage
+      - name: Tests + coverage
         run: |
-          pip install coverage
           coverage run -m pytest
           coverage xml
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage
-          path: coverage.xml
+            name: coverage
+            path: coverage.xml
 
   build:
     runs-on: ubuntu-latest
@@ -74,6 +73,6 @@ jobs:
       - name: Build & push
         run: |
           IMAGE=ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
-            docker build -t $IMAGE .
+          docker build -t $IMAGE .
           docker push $IMAGE
           echo "IMAGE_TAG=$IMAGE" >> $GITHUB_ENV
