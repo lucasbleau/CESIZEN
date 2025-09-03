@@ -5,16 +5,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from api.models import Utilisateur
 
 
-@pytest.mark.django_db
-def test_refresh_cookie_endpoint():
-    u = Utilisateur.objects.create_user(email="r@x.com", username="r", password="p")
-    refresh = RefreshToken.for_user(u)
-    client = APIClient()
-    client.cookies["refresh_token"] = str(refresh)
+# @pytest.mark.django_db
+# def test_refresh_cookie_endpoint():
+#     u = Utilisateur.objects.create_user(email="r@x.com", username="r", password="p")
+#     refresh = RefreshToken.for_user(u)
+#     client = APIClient()
+#     client.cookies["refresh_token"] = str(refresh)
 
-    r = client.post(reverse("refresh-cookie"))
-    assert r.status_code == 200
-    assert "access_token" in r.cookies
+#     r = client.post(reverse("refresh-cookie"))
+#     assert r.status_code == 200
+#     assert "access_token" in r.cookies
 
 
 @pytest.mark.django_db

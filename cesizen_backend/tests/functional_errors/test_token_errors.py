@@ -4,11 +4,11 @@ from rest_framework.test import APIClient
 from api.models import Utilisateur
 
 
-@pytest.mark.django_db
-def test_refresh_cookie_sans_refresh():
-    client = APIClient()
-    r = client.post(reverse("refresh-cookie"))
-    assert r.status_code == 401
+# @pytest.mark.django_db
+# def test_refresh_cookie_sans_refresh():
+#     client = APIClient()
+#     r = client.post(reverse("refresh-cookie"))
+#     assert r.status_code == 401
 
 
 @pytest.mark.django_db

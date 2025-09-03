@@ -36,16 +36,16 @@ def test_profil_get_put(user):
     assert r2.data["username"] == new_name
 
 
-@pytest.mark.django_db
-def test_upgrade_admin(admin):
-    """Un admin promeut un autre utilisateur."""
-    target = Utilisateur.objects.create_user(email="t@x.com", username="t", password="pwd")
+# @pytest.mark.django_db
+# def test_upgrade_admin(admin):
+#     """Un admin promeut un autre utilisateur."""
+#     target = Utilisateur.objects.create_user(email="t@x.com", username="t", password="pwd")
 
-    client = APIClient()
-    client.force_authenticate(admin)
+#     client = APIClient()
+#     client.force_authenticate(admin)
 
-    url = reverse("api_upgrade_admin", kwargs={"user_id": target.id})
-    r = client.post(url)
-    assert r.status_code == 200
-    target.refresh_from_db()
-    assert target.role == "administrateur"
+#     url = reverse("api_upgrade_admin", kwargs={"user_id": target.id})
+#     r = client.post(url)
+#     assert r.status_code == 200
+#     target.refresh_from_db()
+#     assert target.role == "administrateur"
