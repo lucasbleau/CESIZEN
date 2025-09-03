@@ -1,0 +1,13 @@
+[flake8]
+max-line-length = 120
+exclude = .git,__pycache__,migrations,cesizen_backend/tests/unit_errors
+
+import pytest  # <- supprimer si non utilisé
+
+# Ligne trop longue initiale:
+# assert serializer.errors == {"detail": "Message très très long ..................."}
+
+# Version coupée
+assert serializer.errors == {
+    "detail": "Message très très long ..............."
+}
