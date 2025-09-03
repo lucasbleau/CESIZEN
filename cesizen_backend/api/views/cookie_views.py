@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from api.serializers import ConnexionSerializer, InscriptionSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 User = get_user_model()
 CK = dict(httponly=True, secure=not settings.DEBUG, samesite="Lax", path="/")
