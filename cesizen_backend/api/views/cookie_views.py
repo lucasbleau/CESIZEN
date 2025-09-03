@@ -1,11 +1,12 @@
 from urllib import response
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework import status, permissions
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from api.serializers import ConnexionSerializer, InscriptionSerializer
 
 User = get_user_model()
 CK = dict(httponly=True, secure=not settings.DEBUG, samesite="Lax", path="/")
@@ -59,22 +60,70 @@ class CookieLogoutView(APIView):
         return resp
 
 class InscriptionView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        data = getattr(request, "data", {})
-        email = data.get("email")
-        username = data.get("username")
-        password = data.get("password")
-        if not all([email, username, password]):
-            return Response({"error": "Champs manquants."}, status=400)
-        if User.objects.filter(email=email).exists():
-            return Response({"error": "Email déjà utilisé."}, status=400)
-        if User.objects.filter(username=username).exists():
-            return Response({"error": "Nom déjà utilisé."}, status=400)
-        u = User(email=email, username=username)
-        u.set_password(password)
-        u.save()
-        return Response({"detail": "Compte créé."}, status=201)
+    permission_classes = [permissions.AllowAny]
 
-class LogoutView(CookieLogoutView):
-    pass
+    def post(self, request):
+        ser = InscriptionSerializer(data=request.data)
+        if not ser.is_valid():
+            # ser.errors est déjà {"error": "..."} si custom, sinon formater
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Vérifs DB (duplication) ici (functional tests marqués django_db)
+        if User.objects.filter(email=ser.validated_data["email"]).exists():
+            return Response({"error": "Email déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(username=ser.validated_data["username"]).exists():
+            return Response({"error": "Username déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
+        user = ser.save()
+        return Response({"id": user.id, "email": user.email}, status=status.HTTP_201_CREATED)
+
+
+class ConnexionView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        ser = ConnexionSerializer(data=request.data)
+        if not ser.is_valid():
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = authenticate(
+            request=request,
+            email=ser.validated_data["email"],
+            password=ser.validated_data["password"]
+        )
+        if not user:
+            return Response({"error": "Identifiants invalides"}, status=status.HTTP_400_BAD_REQUEST)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh)
+        })
+
+
+class UpgradeAdminView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        if not request.user.is_superuser:
+            return Response({"error": "Accès refusé"}, status=status.HTTP_403_FORBIDDEN)
+        cible = get_object_or_404(User, pk=user_id)
+        cible.is_superuser = True
+        if hasattr(cible, "role"):
+            try:
+                cible.role = "administrateur"
+            except Exception:
+                pass
+        cible.save()
+        return Response({"detail": "Utilisateur promu"}, status=status.HTTP_200_OK)
+
+
+class RefreshCookieView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        token_str = request.COOKIES.get("refresh_token")
+        if not token_str:
+            return Response({"error": "Aucun refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            refresh = RefreshToken(token_str)
+            access = refresh.access_token
+            return Response({"access": str(access)})
+        except Exception:
+            return Response({"error": "Refresh invalide"}, status=status.HTTP_400_BAD_REQUEST)
