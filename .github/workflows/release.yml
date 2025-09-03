@@ -1,27 +1,24 @@
 name: Release Image
-
 on:
   push:
-    tags:
-      - "v*.*.*"
+    tags: ["v*.*.*"]
 
 jobs:
-  build-release:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - name: Login GHCR
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build & push
+      - name: Build & push versioned image
         run: |
-          VERSION=${GITHUB_REF##*/}
-          IMAGE=ghcr.io/${{ github.repository }}:${VERSION}
+          VER=${GITHUB_REF##*/}
+          IMAGE=ghcr.io/${{ github.repository }}:$VER
           docker build -t $IMAGE .
           docker push $IMAGE

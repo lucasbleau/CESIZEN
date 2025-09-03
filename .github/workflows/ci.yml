@@ -43,12 +43,36 @@ jobs:
         run: python cesizen_backend/manage.py migrate --noinput
       - name: Smoke test
         run: python cesizen_backend/manage.py check
+      - name: Lint
+        run: pip install flake8 && flake8 .
+      - name: Coverage
+        run: |
+          pip install coverage
+          coverage run -m pytest
+          coverage xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
 
   build:
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
-      - name: Build image
-        run: docker build -t cesizen:test .
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
+            docker build -t $IMAGE .
+          docker push $IMAGE
+          echo "IMAGE_TAG=$IMAGE" >> $GITHUB_ENV
