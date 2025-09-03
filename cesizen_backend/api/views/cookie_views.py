@@ -117,7 +117,6 @@ class UpgradeAdminView(APIView):
 
 class RefreshCookieView(APIView):
     permission_classes = [permissions.AllowAny]
-
     def post(self, request):
         token_str = request.COOKIES.get("refresh_token")
         if not token_str:
@@ -128,3 +127,10 @@ class RefreshCookieView(APIView):
             return Response({"access": str(access)})
         except Exception:
             return Response({"error": "Refresh invalide"}, status=status.HTTP_400_BAD_REQUEST)
+
+# --- Aliases rétro-compat pour anciens noms importés ailleurs ---
+LoginView = CookieLoginView
+LogoutView = CookieLogoutView
+CookieRefreshTokenView = CookieRefreshView
+RefreshCookieTokenView = RefreshCookieView
+TokenRefreshCookieView = RefreshCookieView
