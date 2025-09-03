@@ -1,6 +1,7 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
 from api.models import (
     ExerciceRespiration,
     HistoriqueExercice,
@@ -101,3 +102,71 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
+
+
+# === Mapping pour les tests: ConnexionSerializer / InscriptionSerializer ===
+
+class ConnexionSerializer(serializers.Serializer):
+    """
+    Serializer d'authentification simple (mapping demandé par les tests).
+    Attend email + password (ou username si ton USERNAME_FIELD diffère).
+    Retourne l'utilisateur authentifié dans validated_data['user'].
+    """
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
+        user = authenticate(
+            request=self.context.get("request"),
+            email=email,
+            password=password
+        )
+        if not user:
+            raise serializers.ValidationError({"detail": "Identifiants invalides"})
+        attrs["user"] = user
+        return attrs
+
+
+class InscriptionSerializer(serializers.ModelSerializer):
+    """
+    Serializer d'inscription (mapping demandé par les tests).
+    Crée un utilisateur via create_user pour hasher le mot de passe.
+    """
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = Utilisateur
+        # Ajuste si les tests attendent d'autres champs (ex: first_name, last_name)
+        fields = ("email", "username", "password")
+
+    def validate_email(self, value):
+        if Utilisateur.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email déjà utilisé.")
+        return value
+
+    def validate_username(self, value):
+        if Utilisateur.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username déjà utilisé.")
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        user = Utilisateur.objects.create_user(password=password, **validated_data)
+        return user
+
+# Optionnel: pour que from api.serializers import * expose aussi ces noms
+__all__ = [
+    "UserSerializer",
+    "ProfilSerializer",
+    "UtilisateurSerializer",
+    "ExerciceRespirationSerializer",
+    "InformationSerializer",
+    "HistoriqueExerciceSerializer",
+    "MessageResponseSerializer",
+    "ErrorResponseSerializer",
+    "EmailTokenObtainPairSerializer",
+    "ConnexionSerializer",
+    "InscriptionSerializer",
+]
