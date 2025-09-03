@@ -1,7 +1,7 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from api.models import ExerciceRespiration, HistoriqueExercice
+from api.models import ExerciceRespiration, HistoriqueExercice, Information, Utilisateur
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -15,7 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
 class ProfilSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = ['username', 'email', 'first_name', 'last_name']
+        fields = ("email", "username", "first_name", "last_name", "role")
+        read_only_fields = ("role",)
 
     def validate_username(self, value):
         user = self.context['request'].user
