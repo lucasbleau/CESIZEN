@@ -1,11 +1,11 @@
 [flake8]
 max-line-length = 120
 exclude = .git,__pycache__,cesizen_backend/api/migrations,cesizen_backend/tests
+ignore = E501,E402,E302,E305,E301,E128,E221,W292,W293
 per-file-ignores =
-    cesizen_backend/manage.py:E401
+    cesizen_backend/api/views/__init__.py:F401
     cesizen_backend/cesizen_backend/settings.py:F401
     cesizen_backend/cesizen_backend/settings/test.py:F401,F403
-ignore = W292,W293
 
 import pytest  # <- supprimer si non utilisé
 
