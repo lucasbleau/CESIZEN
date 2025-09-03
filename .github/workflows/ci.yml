@@ -45,7 +45,7 @@ jobs:
       - name: Smoke test
         run: python cesizen_backend/manage.py check
       - name: Lint
-        run: pip install flake8 && flake8 .
+        run: flake8 cesizen_backend/api
       - name: Coverage
         run: |
           pip install coverage

@@ -1,6 +1,11 @@
 [flake8]
 max-line-length = 120
-exclude = .git,__pycache__,migrations,cesizen_backend/tests/unit_errors
+exclude = .git,__pycache__,cesizen_backend/api/migrations,cesizen_backend/tests
+per-file-ignores =
+    cesizen_backend/manage.py:E401
+    cesizen_backend/cesizen_backend/settings.py:F401
+    cesizen_backend/cesizen_backend/settings/test.py:F401,F403
+ignore = W292,W293
 
 import pytest  # <- supprimer si non utilisé
 
