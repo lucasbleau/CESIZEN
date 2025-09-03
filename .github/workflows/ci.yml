@@ -29,6 +29,8 @@ jobs:
       PYTHONPATH: cesizen_backend
     steps:
       - uses: actions/checkout@v4
+      - name: Show tree
+        run: ls -R .
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -49,4 +51,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build image
-        run: docker build -t test-image .
+        run: docker build -t cesizen:test .
