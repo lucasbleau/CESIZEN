@@ -23,7 +23,7 @@ jobs:
           --health-retries=10
     env:
       DATABASE_URL: postgres://ci_user:ci_pass@localhost:5432/ci_db
-      DJANGO_SECRET_KEY: dummy-ci-key
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'dummy-ci-key' }}
       DEBUG: "0"
     steps:
       - uses: actions/checkout@v4

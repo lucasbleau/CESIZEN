@@ -17,6 +17,7 @@ import sqlite3
 from django.db.backends.signals import connection_created
 from django.dispatch import receiver
 import dj_database_url
+from urllib.parse import urlparse
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,10 +30,10 @@ SESSION_COOKIE_AGE = 1209600  # 2 semaines
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY","dev-insecure")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-insecure-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG","0") == "1"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -125,14 +126,19 @@ def enforce_foreign_keys(connection):
         cursor.execute("PRAGMA foreign_keys = ON;")
         cursor.close()
 
-DATABASE_URL = os.getenv("DATABASE_URL","postgres://cesi:cesi@localhost:5432/cesizen")
-DATABASES = {
-    "default": dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=False
-    )
-}
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    u = urlparse(DATABASE_URL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": u.path.lstrip("/"),
+            "USER": u.username,
+            "PASSWORD": u.password,
+            "HOST": u.hostname,
+            "PORT": u.port or 5432,
+        }
+    }
 
 def activate_foreign_keys(sender, connection, **kwargs):
     enforce_foreign_keys(connection)
