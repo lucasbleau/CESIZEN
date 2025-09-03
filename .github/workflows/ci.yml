@@ -26,6 +26,7 @@ jobs:
       DATABASE_URL: postgres://ci_user:ci_pass@localhost:5432/ci_db
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'dummy-ci-key' }}
       DEBUG: "0"
+      PYTHONPATH: cesizen_backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,13 +34,13 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: |
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install pytest pytest-django
+          pip install --upgrade pip
+          pip install -r cesizen_backend/requirements.txt
+          pip install pytest pytest-django
       - name: Migrate
-        run: python manage.py migrate --noinput
+        run: python cesizen_backend/manage.py migrate --noinput
       - name: Smoke test
-        run: python manage.py check
+        run: python cesizen_backend/manage.py check
 
   build:
     runs-on: ubuntu-latest
