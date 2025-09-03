@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions, serializers
 from rest_framework_simplejwt.tokens import AccessToken
+from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from api.models import HistoriqueExercice
 from api.serializers import HistoriqueExerciceSerializer, ErrorResponseSerializer, MessageResponseSerializer
