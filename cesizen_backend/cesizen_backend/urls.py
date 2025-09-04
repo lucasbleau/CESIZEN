@@ -3,6 +3,7 @@ from django.urls import path, include
 from api.views.cookie_views import (
     InscriptionView, ConnexionView, UpgradeAdminView, RefreshCookieView
 )
+from api.views.health import HealthView
 from drf_spectacular.views import SpectacularAPIView
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path("api/upgrade-admin/<int:user_id>/", UpgradeAdminView.as_view(), name="api_upgrade_admin"),
     path("api/token/refresh-cookie/", RefreshCookieView.as_view(), name="refresh-cookie"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("health/", HealthView.as_view(), name="health"),
 ]
