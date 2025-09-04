@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract version
+      - name: Extract version + repo (lowercase)
         id: meta
         run: |
             VER="${GITHUB_REF##*/}"
@@ -22,6 +22,8 @@ jobs:
             MINOR="${BASE%.*}"
             echo "tag_major=v${MAJOR}" >> $GITHUB_OUTPUT
             echo "tag_minor=v${MINOR}" >> $GITHUB_OUTPUT
+            REPO_LC=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+            echo "repo=$REPO_LC" >> $GITHUB_OUTPUT
 
       - uses: docker/setup-buildx-action@v3
 
@@ -38,9 +40,9 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.ver }}
-            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag_minor }}
-            ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.tag_major }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ steps.meta.outputs.repo }}:${{ steps.meta.outputs.ver }}
+            ghcr.io/${{ steps.meta.outputs.repo }}:${{ steps.meta.outputs.tag_minor }}
+            ghcr.io/${{ steps.meta.outputs.repo }}:${{ steps.meta.outputs.tag_major }}
+            ghcr.io/${{ steps.meta.outputs.repo }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
