@@ -12,11 +12,12 @@ async function tryRefreshIf401(res) {
     method: "POST",
     credentials: "include",
   });
-  if (!r.ok) return res; 
+  if (!r.ok) return res;
   return fetchProfile();
 }
-function btn(html, extra="") {
-  return `<button class="toggle-btn ${extra}">${html}</button>`;
+function logoutLink() {
+  // Fallback: GET vers l’endpoint (redirige vers /)
+  return `<a class="toggle-btn active" href="/api/token/cookie/logout/?next=/" data-logout>Déconnexion</a>`;
 }
 async function renderUserHeader() {
   const zone = document.getElementById("user-zone");
@@ -30,12 +31,19 @@ async function renderUserHeader() {
       <div class="d-flex align-items-center gap-2">
         <a href="/profil/" class="toggle-btn">${data.username || data.email}</a>
         ${data.is_superuser ? `<a href="/admin/" class="toggle-btn">Admin</a>` : ""}
-        ${btn("Déconnexion","active")} 
+        ${logoutLink()}
       </div>`;
-    zone.querySelector(".toggle-btn.active").onclick = async () => {
-      await fetch("/api/token/cookie/logout/", { method:"POST", credentials:"include" });
-      location.reload();
-    };
+    const a = zone.querySelector("[data-logout]");
+    a.addEventListener("click", async (e) => {
+      // Intercepte l’ancre pour faire un POST propre
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        await fetch("/api/token/cookie/logout/", { method: "POST", credentials: "include" });
+      } catch {}
+      // Redirige ensuite vers la home
+      window.location.href = "/";
+    });
   } catch {
     zone.innerHTML = `
       <a href="/connexion/" class="toggle-btn primary">Se connecter</a>
